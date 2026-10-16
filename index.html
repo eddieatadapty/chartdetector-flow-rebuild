@@ -1,0 +1,1677 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- flow-rebuild template (Growth Audit, v3: + walkthrough video, phone view/QR, localization, paywall today vs proposed). Replace every double-brace placeholder, everything between
+     the SCREENS markers, and the CONTENT json. Rules that brand-check.py enforces are marked RULE.
+     Reference builds: eddieatadapty.github.io/datacamp-flow-rebuild-v2 · bterzic123.github.io/planner5d-flow-rebuild-v2 -->
+<title>ChartDetector Growth Audit</title>
+<meta name="description" content="Five ideas to turn more ChartDetector users into subscribers, each built into a clickable version of ChartDetector's own onboarding. Prepared by Adapty.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- the APP's font (brand.json fonts, or the closest Google family) + a mono if the app shows code -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* BRAND:START — the only place the APP's colours are written as literals. RULE: every value here is
+   copied from brand.json / a sampled pixel of the app's own screens; never "improved". Used only inside the phone. */
+:root{
+--b-primary:#22c55e;        /* CTA / checks / "Analyze Chart" pill — sampled #22c55e */
+  --b-primary-ink:#062b16;    /* dark text on green (site palette) */
+  --b-bg:#080c13;             /* screen background, sampled */
+  --b-bg2:#0e1122;            /* blue-black glow in the background */
+  --b-surface:#202329;        /* cards, rows */
+  --b-surface2:#24272f;
+  --b-ink:#ffffff;
+  --b-ink2:rgba(255,255,255,.6);
+  --b-ink3:rgba(255,255,255,.4);
+  --b-line:rgba(255,255,255,.08);
+  --b-accent2:#f0a93e;        /* Hold amber */
+  --b-red:#ff6568;            /* down / resistance */
+  --b-hold:#3e3326;           /* Hold card gradient top */
+  --b-hold2:#2d2924;
+  --b-long:#173b2a;           /* green-tinted card */
+  --b-green-chip:#1b412e;     /* support chip / icon tile */
+  --b-red-chip:#482f33;       /* resistance chip */
+  --b-green-deep:#19733d;     /* "UP NEXT" pill */
+  --b-nav:#0f2a1f;            /* active tab pill */
+  --b-grad:linear-gradient(180deg,#0e1122 0%,#080c13 55%);
+  --b-radius:18px;
+  --b-pill:999px;
+  --b-font:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif;
+  --b-mono:'Inter',system-ui,sans-serif;
+}
+/* BRAND:END */
+
+/* A second app family (e.g. a mono for code) is applied HERE, never in SCREENS css (brand-check allows only
+   var(--b-font) there). Prefix with .scr so it beats the screens' font shorthands, e.g.:
+   .scr .code,.scr .instr code{font-family:var(--b-mono)} */
+
+/* ================= the audit page — Adapty's, not the app's. Light, Apple-style. ================= */
+:root{
+  color-scheme:light;
+  --st-ground:#f5f5f7; --st-card:#ffffff; --st-ink:#1d1d1f; --st-ink2:#6e6e73; --st-ink3:#86868b;
+  --st-hair:rgba(0,0,0,.09); --st-link:#0066cc;
+  --st-accent:#062b16;
+  --st-hi:#22c55e;
+  --st-mark:rgba(34,197,94,.42);
+  --st-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+html,body{margin:0}
+body{background:var(--st-ground);color:var(--st-ink);font-family:var(--st-font);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.47}
+.au-wrap{max-width:1080px;margin:0 auto;padding-inline:22px}
+a{color:var(--st-link)}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--st-link);outline-offset:3px;border-radius:6px}
+mark{background:linear-gradient(transparent 62%,var(--st-mark) 62%,var(--st-mark) 92%,transparent 92%);color:inherit;padding:0 .04em}
+
+/* nav */
+.au-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(245,245,247,.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--st-hair)}
+.au-nav-in{max-width:1080px;margin:0 auto;padding-inline:22px;height:52px;display:flex;align-items:center;gap:26px}
+.au-brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.au-brand img{width:26px;height:26px;border-radius:7px;flex:none}
+.au-brand span{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.au-brand small{font-size:15px;font-weight:400;color:var(--st-ink2)}
+.au-nav a{font-size:13px;color:var(--st-ink);text-decoration:none;opacity:.82}
+.au-nav a:hover{opacity:1}
+@media (max-width:560px){.au-nav a.au-opt{display:none}.au-brand small{display:none}}
+
+/* hero */
+.au-top-hero{text-align:center;padding-top:clamp(56px,9vw,96px);overflow:hidden;position:relative}
+.au-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--st-ink);margin:0 0 14px}
+.au-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-display{font-size:clamp(60px,12vw,120px);line-height:.98;font-weight:700;letter-spacing:-.05em;margin:0}
+.au-lede{font-size:clamp(23px,3.4vw,34px);line-height:1.16;font-weight:600;letter-spacing:-.022em;max-width:760px;margin:22px auto 0;text-wrap:balance}
+.au-lede span{color:var(--st-ink2)}
+.au-byline{font-size:14px;color:var(--st-ink3);margin:18px 0 0}
+.au-ctas{display:flex;gap:26px;justify-content:center;align-items:center;margin-top:30px;flex-wrap:wrap}
+.au-btn{display:inline-block;background:var(--st-accent);color:#fff;border-radius:980px;padding:12px 23px;font-size:17px;font-weight:500;text-decoration:none;border:0;cursor:pointer}
+.au-btn:hover{filter:brightness(1.25)}
+.au-lnk{background:none;border:0;padding:0;color:var(--st-link);font-size:17px;text-decoration:none;cursor:pointer}
+.au-lnk::after{content:"\00a0›"}
+.au-lnk:hover{text-decoration:underline}
+.au-phones{display:flex;justify-content:center;align-items:flex-start;margin-top:clamp(40px,6vw,64px);height:clamp(300px,52vw,560px)}
+.au-hp{flex:none;border:0;padding:0;background:none;cursor:pointer;width:27%;max-width:290px;margin:0 -2.5%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.au-hp img{display:block;width:100%;height:auto;filter:drop-shadow(0 28px 50px rgba(0,0,0,.2))}
+.au-hp.au-c{width:31%;max-width:330px;z-index:2}
+.au-hp.au-l{transform:translateY(12%) rotate(-5deg)}
+.au-hp.au-r{transform:translateY(12%) rotate(5deg)}
+.au-hp.au-l:hover{transform:translateY(9%) rotate(-5deg)}.au-hp.au-r:hover{transform:translateY(9%) rotate(5deg)}.au-hp.au-c:hover{transform:translateY(-3%)}
+
+/* sections */
+.au-sec{padding-block:clamp(72px,10vw,120px)}
+.au-sec.au-white{background:var(--st-card)}
+.au-kicker{font-size:15px;font-weight:600;color:var(--st-ink2);margin:0 0 12px}
+.au-h2{font-size:clamp(34px,5.2vw,56px);line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.au-h2 span{color:var(--st-ink3)}
+.au-split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,6vw,80px);align-items:end}
+.au-split p{margin:0;font-size:clamp(17px,1.7vw,21px);line-height:1.45;color:var(--st-ink2);letter-spacing:-.01em}
+.au-split p b{color:var(--st-ink);font-weight:600}
+.au-split p + p{margin-top:16px}
+.au-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(48px,7vw,80px);border-top:1px solid var(--st-hair)}
+.au-stat{padding:28px 20px 0 0}
+.au-stat b{display:block;font-size:clamp(40px,5.5vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.au-stat span{display:block;font-size:15px;color:var(--st-ink2);margin-top:10px;max-width:22ch}
+.au-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px);margin-top:clamp(48px,7vw,72px)}
+.au-note h3{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0 0 8px}
+.au-note p{margin:0;font-size:15.5px;line-height:1.5;color:var(--st-ink2)}
+.au-note .au-ic{width:36px;height:36px;border-radius:10px;background:var(--st-ground);display:grid;place-items:center;margin-bottom:16px}
+.au-note .au-ic svg{width:19px;height:19px;stroke:var(--st-accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ideas */
+.au-ideas-h{margin-bottom:clamp(32px,5vw,48px)}
+.au-list{background:var(--st-card);border-radius:28px;padding-inline:clamp(20px,4vw,44px)}
+.au-idea{display:grid;grid-template-columns:56px 1fr 220px;gap:20px;align-items:start;padding-block:clamp(26px,3.5vw,36px);border-top:1px solid var(--st-hair)}
+.au-idea:first-child{border-top:0}
+.au-idea .au-num{font-size:15px;font-weight:600;color:var(--st-ink3);font-variant-numeric:tabular-nums;padding-top:6px}
+.au-idea h3{font-size:clamp(21px,2.4vw,26px);line-height:1.2;font-weight:600;letter-spacing:-.022em;margin:0 0 8px}
+.au-idea p{margin:0 0 12px;font-size:17px;line-height:1.5;color:var(--st-ink2);max-width:58ch}
+.au-idea p code{font:600 15px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--st-ink);background:var(--st-ground);padding:2px 7px;border-radius:6px}
+.au-idea .au-lnk{font-size:15px}
+.au-imp{text-align:right}
+.au-imp .au-v{font-size:clamp(30px,3.6vw,40px);font-weight:700;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums;color:var(--st-accent)}
+.au-imp .au-l{font-size:13.5px;color:var(--st-ink2);margin-top:8px}
+.au-band{margin-top:20px;background:var(--st-accent);color:#fff;border-radius:28px;padding:clamp(32px,5vw,56px);display:grid;grid-template-columns:1fr auto;gap:clamp(28px,5vw,64px);align-items:center}
+.au-band .au-k{font-size:15px;font-weight:600;color:rgba(255,255,255,.62);margin:0 0 10px}
+.au-band h3{font-size:clamp(24px,3vw,32px);line-height:1.18;font-weight:600;letter-spacing:-.022em;margin:0;text-wrap:balance}
+.au-band .au-fn{font-size:13px;line-height:1.5;color:rgba(255,255,255,.55);margin:16px 0 0;max-width:52ch}
+.au-nums{display:flex;gap:clamp(28px,4vw,48px)}
+.au-nums small{display:block;font-size:13px;color:rgba(255,255,255,.62)}
+.au-nums b{display:block;font-size:clamp(48px,6.5vw,76px);font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-hi);font-variant-numeric:tabular-nums;margin:4px 0 8px}
+.au-nums span{font-size:14px;color:rgba(255,255,255,.8)}
+.au-band .au-btn{background:var(--st-hi);color:var(--st-accent);font-weight:600;margin-top:26px}
+
+/* prototype */
+.au-proto-h{text-align:center;max-width:720px;margin:0 auto}
+.au-proto-h p{font-size:clamp(17px,1.7vw,21px);color:var(--st-ink2);margin:14px 0 0}
+.au-seg{display:flex;gap:4px;justify-content:center;margin:clamp(28px,4vw,40px) auto 0;padding:4px;background:var(--st-ground);border-radius:980px;width:max-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.au-seg::-webkit-scrollbar{display:none}
+.au-chip{flex:none;display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--st-ink2);font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:980px;cursor:pointer;white-space:nowrap}
+.au-chip:hover{color:var(--st-ink)}
+.au-chip.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.au-chip i{font-style:normal;font-size:11px;font-weight:700;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--st-hi);color:var(--st-accent)}
+.au-stage{display:grid;grid-template-columns:auto minmax(0,420px);gap:clamp(32px,6vw,72px);justify-content:center;align-items:center;margin-top:clamp(28px,4vw,44px)}
+.phone{width:390px;height:844px;border-radius:56px;padding:10px;background:#0b0d10;box-shadow:0 0 0 1.5px #3a3d42,0 40px 90px rgba(0,0,0,.25);max-width:calc(100vw - 44px)}
+.phone-in{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:var(--b-bg)}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#000;z-index:9}
+.sbar{position:absolute;top:0;left:0;right:0;height:52px;display:flex;justify-content:space-between;align-items:center;padding:4px 32px 0;font:600 15px -apple-system,system-ui,sans-serif;color:var(--b-ink);z-index:8;pointer-events:none}
+.au-pn{background:var(--st-ground);border-radius:28px;padding:clamp(26px,3.5vw,38px)}
+.au-pn-k{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--st-ink)}
+.au-pn-k i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-pn-k.au-ctx{color:var(--st-ink2)}.au-pn-k.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-pn-t{font-size:clamp(24px,2.6vw,30px);line-height:1.12;font-weight:700;letter-spacing:-.028em;margin:10px 0 14px;text-wrap:balance}
+.au-pn-h{margin:0;font-size:17px;line-height:1.55;color:var(--st-ink2)}
+.au-pn-h b{color:var(--st-ink);font-weight:600}
+.au-pn-o{margin-top:24px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-pn-o .au-lab{font-size:13px;font-weight:600;color:var(--st-ink3)}
+.au-pn-o .au-val{font-size:clamp(38px,4.4vw,50px);font-weight:700;letter-spacing:-.04em;line-height:1.05;color:var(--st-accent);margin-top:6px;font-variant-numeric:tabular-nums}
+.au-pn-o .au-sub{font-size:14px;color:var(--st-ink2);margin-top:4px}
+.au-pn-a{margin:18px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-pn-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px;padding-top:18px;border-top:1px solid var(--st-hair);font-size:13px;color:var(--st-ink3)}
+.au-pn-nav button{background:var(--st-card);border:0;border-radius:980px;padding:8px 15px;font-size:14px;font-weight:500;color:var(--st-ink);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.au-pn-nav button:disabled{opacity:.35;cursor:default}
+.au-hint{text-align:center;font-size:14px;color:var(--st-ink3);margin:22px 0 0}
+
+/* footer */
+.au-foot{padding-block:56px 72px;border-top:1px solid var(--st-hair)}
+.au-foot details{border-bottom:1px solid var(--st-hair);padding-bottom:18px}
+.au-foot summary{cursor:pointer;font-size:17px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.au-foot summary::-webkit-details-marker{display:none}
+.au-foot summary::after{content:"+";font-size:24px;font-weight:300;color:var(--st-ink2)}
+.au-foot details[open] summary::after{content:"−"}
+.au-srcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 48px;margin-top:18px}
+.au-srcs h4{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--st-ink3);margin:18px 0 6px}
+.au-srcs dl{margin:0}.au-srcs dt{font-size:14.5px;font-weight:600;margin-top:10px}
+.au-srcs dd{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-fine{font-size:12.5px;line-height:1.6;color:var(--st-ink3);margin:22px 0 0;max-width:80ch}
+.au-cta-line{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:36px}
+.au-cta-line p{margin:0;font-size:clamp(19px,2.2vw,24px);font-weight:600;letter-spacing:-.02em;max-width:34ch}
+
+@media (max-width:900px){
+  .au-split,.au-band{grid-template-columns:1fr}
+  .au-notes{grid-template-columns:1fr}
+  .au-idea{grid-template-columns:40px 1fr}
+  .au-imp{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:10px}
+  .au-imp .au-l{margin:0}
+  .au-imp .au-v{white-space:nowrap}
+  .au-stage{grid-template-columns:1fr;justify-items:center}
+  .au-pn{width:100%;max-width:520px}
+  .au-srcs{grid-template-columns:1fr}
+}
+@media (max-width:560px){.au-stats{grid-template-columns:1fr}.au-stat{padding:22px 0 0}.au-nums{flex-direction:column;gap:18px}}
+
+/* ================= extras (audit side): video, language, phone view + QR, paywall today vs proposed, ?tour ================= */
+[hidden]{display:none!important}
+/* the device never scrolls: off-screen slides would otherwise make it scrollable by focus / scrollIntoView */
+.phone-in,.scr{overflow:clip}
+/* hero: walkthrough link */
+.au-play::before{content:"▶";font-size:.72em;margin-right:7px;position:relative;top:-1px}
+/* video dialog */
+.au-vid{border:0;padding:0;background:transparent;max-width:min(1120px,94vw);width:100%;overflow:visible}
+.au-vid::backdrop{background:rgba(0,0,0,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.au-vid-in{background:#000;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.au-vid video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.au-vid-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 4px 0;font-size:14px}
+.au-vid-bar a{color:#fff;opacity:.85}
+.au-vid-x{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:980px;padding:8px 16px;font-size:14px;cursor:pointer}
+/* language switch */
+.au-langrow{display:flex;justify-content:center;align-items:center;gap:12px;margin:18px 0 0;font-size:13.5px;color:var(--st-ink2);flex-wrap:wrap}
+.au-lsw{display:inline-flex;gap:2px;padding:3px;background:var(--st-ground);border-radius:980px}
+.au-lsw button{border:0;background:none;padding:6px 13px;border-radius:980px;font-size:13.5px;font-weight:500;color:var(--st-ink2);cursor:pointer;white-space:nowrap}
+.au-lsw button.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+/* QR card (desktop) / full-screen button (phone) */
+.au-qr{display:flex;align-items:center;gap:18px;margin:26px auto 0;max-width:500px;background:var(--st-ground);border-radius:22px;padding:14px 22px 14px 14px}
+.au-qr img{width:112px;height:112px;border-radius:12px;image-rendering:pixelated;flex:none;background:#fff}
+.au-qr b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.au-qr p{margin:4px 0 0;font-size:14.5px;line-height:1.45;color:var(--st-ink2)}
+.au-mobw{display:none;text-align:center;margin-top:22px}
+@media (max-width:900px){.au-qr{display:none}.au-mobw{display:block}}
+/* paywall: today vs proposed */
+.au-cmp{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr) minmax(0,290px);gap:clamp(24px,4vw,52px);align-items:center;margin-top:clamp(32px,5vw,52px)}
+.au-cmp figure{margin:0;text-align:center}
+.au-cmp figure img{display:block;width:100%;height:auto;filter:drop-shadow(0 24px 44px rgba(0,0,0,.18))}
+.au-cmp figcaption{margin-top:14px;font-size:15px;font-weight:600}
+.au-cmp figcaption span{color:var(--st-ink2);font-weight:400}
+.au-cmp-go{border:0;padding:0;background:none;cursor:pointer;display:block;width:100%;transition:transform .3s}
+.au-cmp-go:hover{transform:translateY(-4px)}
+.au-chg{list-style:none;margin:0;background:var(--st-card);border-radius:24px;padding:4px clamp(18px,2.4vw,28px)}
+.au-chg li{padding:15px 0;border-top:1px solid var(--st-hair)}
+.au-chg li:first-child{border-top:0}
+.au-chg h4{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.au-chg h4 i{font-style:normal;font-size:12px;font-weight:600;color:var(--st-accent);background:var(--st-mark);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.au-was,.au-now{display:grid;grid-template-columns:78px 1fr;gap:8px;font-size:14.5px;line-height:1.42}
+.au-was{color:var(--st-ink3)}
+.au-now{color:var(--st-ink);margin-top:3px}
+.au-was em,.au-now em{font-style:normal;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.au-now em{color:var(--st-link)}
+.au-kept{margin:22px 0 0;font-size:14px;color:var(--st-ink2);text-align:center}
+@media (max-width:900px){.au-cmp{grid-template-columns:1fr 1fr;gap:18px}.au-chg{grid-column:1 / -1;order:3}.au-was,.au-now{grid-template-columns:70px 1fr}}
+
+/* ?app — the prototype full screen on a real phone, with a bar that opens the idea panel */
+html.appmode,html.appmode body{height:100%;overflow:hidden;background:#000}
+html.appmode .au-nav,html.appmode .au-top-hero,html.appmode #why,html.appmode #ideas,html.appmode #compare,html.appmode .au-foot,
+html.appmode .au-proto-h,html.appmode #prototype .au-langrow,html.appmode #chips,html.appmode .au-hint,html.appmode .au-qr,html.appmode .au-mobw{display:none!important}
+html.appmode #prototype{padding:0;background:#000}
+html.appmode #prototype .au-wrap{padding:0;max-width:none}
+html.appmode .au-stage{display:block;margin:0}
+html.appmode .phone{position:fixed;top:0;left:0;right:0;margin:0 auto;width:min(100%,480px);height:calc(100% - 56px - env(safe-area-inset-bottom,0px));max-width:none;border-radius:0;padding:0;box-shadow:none;background:#000}
+html.appmode .phone-in{border-radius:0}
+html.appmode .island,html.appmode .sbar{display:none}
+html.appmode .scr .s-pad{padding-top:max(58px,calc(env(safe-area-inset-top,0px) + 16px))}
+html.appmode .scr .s-x,html.appmode .scr .s-lang{top:max(54px,calc(env(safe-area-inset-top,0px) + 10px))}
+.au-appbar,.au-scrim{display:none}
+html.appmode .au-appbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(56px + env(safe-area-inset-bottom,0px));padding:0 12px env(safe-area-inset-bottom,0px) 16px;align-items:center;gap:12px;background:#0b0b0c;border-top:1px solid rgba(255,255,255,.1);color:#fff}
+.au-ab-why{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:none;border:0;color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;padding:0}
+.au-ab-why i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);flex:none}
+.au-ab-why span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.au-ab-why em{font-style:normal;color:rgba(255,255,255,.6);margin-left:auto;flex:none;font-size:13px}
+.au-appbar .au-lsw{background:rgba(255,255,255,.12)}
+.au-appbar .au-lsw button{color:rgba(255,255,255,.75);padding:5px 11px}
+.au-appbar .au-lsw button.on{background:#fff;color:#000}
+html.appmode #panel{position:fixed;left:0;right:0;bottom:0;z-index:80;max-width:none;width:auto;margin:0 auto;border-radius:24px 24px 0 0;max-height:78%;overflow:auto;transform:translateY(105%);transition:transform .3s cubic-bezier(.3,.7,.2,1);padding-bottom:calc(26px + env(safe-area-inset-bottom,0px))}
+html.appmode.au-open #panel{transform:none}
+html.appmode.au-open .au-scrim{display:block;position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.5)}
+
+/* ?tour — 1280×720 walkthrough frames (record-video.sh renders them into assets/walkthrough.mp4) */
+.au-tour{display:none}
+html.tourmode,html.tourmode body{overflow:hidden;background:var(--st-ground)}
+html.tourmode body *{visibility:hidden}
+html.tourmode .phone,html.tourmode .phone *,html.tourmode .au-tour,html.tourmode .au-tour *{visibility:visible}
+html.tourmode .phone{position:fixed;left:170px;top:44px;margin:0;transform:scale(.755);transform-origin:0 0;box-shadow:0 0 0 1.5px #3a3d42,0 34px 80px rgba(0,0,0,.22);z-index:5;max-width:none}
+html.tourmode .au-tour{display:block;position:fixed;inset:0;z-index:6;pointer-events:none;color:var(--st-ink)}
+.au-tb{position:absolute;left:590px;top:30px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
+.au-tb img{width:26px;height:26px;border-radius:7px}
+.au-tb small{font-size:16px;font-weight:400;color:var(--st-ink2)}
+.au-tby{position:absolute;right:48px;top:32px;font-size:14px;color:var(--st-ink3)}
+.au-tcap{position:absolute;left:590px;right:60px;top:50%;transform:translateY(-50%)}
+.au-tk{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:600}
+.au-tk i{width:9px;height:9px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-tk.au-ctx{color:var(--st-ink2)}.au-tk.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-tt{font-size:46px;line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:14px 0 14px;text-wrap:balance}
+.au-tl{font-size:23px;line-height:1.36;color:var(--st-ink2);letter-spacing:-.01em;margin:0;max-width:28ch}
+.au-to{margin-top:28px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-to small{display:block;font-size:14px;font-weight:600;color:var(--st-ink3)}
+.au-to b{display:inline-block;font-size:62px;font-weight:700;letter-spacing:-.045em;line-height:1.08;color:var(--st-accent);margin-top:4px}
+.au-to span{display:block;font-size:16px;color:var(--st-ink2);margin-top:2px}
+.au-tprog{position:absolute;left:48px;right:48px;bottom:22px;height:4px;border-radius:3px;background:var(--st-hair);overflow:hidden}
+.au-tprog i{display:block;height:100%;background:var(--st-hi)}
+.au-ttap{position:absolute;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,.5);box-shadow:0 0 0 2.5px rgba(255,255,255,.9),0 6px 16px rgba(0,0,0,.35);opacity:0}
+.au-tintro,.au-tend{position:absolute;inset:0;background:var(--st-ground);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0}
+.au-tintro .au-lede{margin-top:18px}
+.au-te-h{font-size:46px;line-height:1.08;font-weight:700;letter-spacing:-.035em;margin:0;max-width:18ch;text-wrap:balance}
+.au-te-n{display:flex;gap:64px;margin-top:30px}
+.au-te-n small{display:block;font-size:14px;color:var(--st-ink2)}
+.au-te-n b{display:block;font-size:76px;font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-accent);margin:4px 0 6px}
+.au-te-n span{font-size:15px;color:var(--st-ink2)}
+.au-te-q{display:flex;align-items:center;gap:18px;margin-top:34px;background:var(--st-card);border-radius:20px;padding:12px 24px 12px 12px;text-align:left}
+.au-te-q img{width:104px;height:104px;border-radius:10px;image-rendering:pixelated}
+.au-te-q b{display:block;font-size:18px;font-weight:600}
+.au-te-q span{display:block;font-size:15px;color:var(--st-link);margin-top:3px}
+.au-te-f{position:absolute;bottom:44px;left:0;right:0;font-size:13px;color:var(--st-ink3);margin:0}
+
+/* ---------- screen engine (layout only, no colours) ---------- */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--b-bg);color:var(--b-ink);font-family:var(--b-font);
+     transform:translateX(100%);transition:transform .32s cubic-bezier(.3,.7,.2,1);overflow:hidden;text-align:left;line-height:normal;font-size:16px}
+.scr.is-active{transform:none;z-index:2}.scr.is-past{transform:translateX(-28%)}.scr.under{transform:none;z-index:1}
+.scr.sheet{transform:translateY(100%)}.scr.sheet.is-active{transform:none}
+.nofx,.nofx *{transition:none!important}
+.shot .scr{transition:none!important}
+/* ?phone — just the device at (10,10), for shoot.sh and hero-stills.sh (&clear = transparent ground) */
+.phoneonly body{background:#141615}
+.phoneonly.clear body{background:transparent}
+.phoneonly body *{visibility:hidden}
+.phoneonly .phone,.phoneonly .phone *{visibility:visible}
+.phoneonly .phone{position:fixed;top:10px;left:10px;z-index:99;box-shadow:none;max-width:none;margin:0}
+
+/* SCREENS:START — styles for the app's screens. RULE: colours only via var(--b-*), or white/black
+   with alpha (scrims, shadows). RULE: no class name that the audit page above already uses
+   (.hero .btn .chip .list .idea .note .stat .band .num .hint .display .split …) — brand-check refuses collisions. */
+.c-glow{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(70% 38% at 100% 0%,rgba(34,197,94,.17),transparent 70%),radial-gradient(80% 40% at 0% 100%,rgba(34,197,94,.13),transparent 70%),var(--b-grad)}
+.c-glow.amber{background:radial-gradient(70% 34% at 100% 0%,rgba(240,169,62,.16),transparent 70%),var(--b-grad)}
+.s-pad{flex:1;min-height:0;display:flex;flex-direction:column;padding:60px 20px 26px;gap:14px;position:relative;z-index:1}
+.c-top{display:flex;align-items:center;gap:12px;min-height:44px}
+.c-back{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:var(--b-surface);color:var(--b-ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.c-back svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.c-prog{flex:1;height:5px;border-radius:5px;background:var(--b-line);overflow:hidden}
+.c-prog i{display:block;height:100%;border-radius:5px;background:var(--b-primary)}
+.c-h{font-weight:700;font-size:29px;line-height:1.12;letter-spacing:-.02em;margin:8px 0 0}
+.c-sub{color:var(--b-ink2);font-size:15.5px;line-height:1.45;margin:0}
+.c-lab{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--b-ink2);margin:6px 0 -2px}
+.c-lab svg{width:16px;height:16px;stroke:var(--b-primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.c-cta{margin-top:auto;width:100%;border:0;border-radius:var(--b-pill);background:var(--b-primary);color:var(--b-primary-ink);font:700 17px var(--b-font);padding:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;flex:none}
+.c-cta svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.c-cta:disabled{opacity:.35}
+.c-link{background:none;border:0;color:var(--b-ink2);font:500 15px var(--b-font);cursor:pointer;padding:4px;align-self:center}
+.c-opt{display:flex;align-items:center;gap:14px;width:100%;background:var(--b-surface);border:2px solid transparent;border-radius:var(--b-radius);padding:14px 16px;color:var(--b-ink);font:600 16.5px var(--b-font);text-align:left;cursor:pointer}
+.c-opt img{width:36px;height:36px;border-radius:50%;flex:none;object-fit:cover}
+.c-opt .c-ic{width:38px;height:38px;border-radius:12px;background:var(--b-green-chip);display:grid;place-items:center;flex:none}
+.c-opt .c-ic svg{width:20px;height:20px;stroke:var(--b-primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.c-opt .c-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.c-opt small{font-weight:500;font-size:13.5px;color:var(--b-ink2)}
+.c-opt .c-ck{width:24px;height:24px;border-radius:50%;border:2px solid var(--b-line);flex:none;display:grid;place-items:center}
+.c-opt.on{border-color:var(--b-primary);background:var(--b-long)}
+.c-opt.on .c-ck{background:var(--b-primary);border-color:var(--b-primary)}
+.c-opt.on .c-ck::after{content:"";width:9px;height:5px;border:2.5px solid var(--b-primary-ink);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.c-card{background:var(--b-surface);border-radius:22px;padding:16px;position:relative;overflow:hidden}
+.c-chart{display:block;width:100%;border-radius:18px;background:var(--b-bg)}
+/* welcome */
+.c-brand{display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:600;font-size:16px}
+.c-brand img{width:46px;height:auto}
+.c-hero{position:relative;border-radius:24px;overflow:hidden;background:var(--b-surface);padding:10px}
+.c-scan{position:absolute;left:10px;right:10px;top:46%;height:2px;background:var(--b-primary);box-shadow:0 0 18px 4px rgba(34,197,94,.55)}
+.c-float{position:absolute;left:18px;bottom:18px;display:flex;align-items:center;gap:10px;background:rgba(8,12,19,.86);border-radius:16px;padding:9px 14px 9px 10px;font-size:22px;font-weight:400}
+.c-float i{width:30px;height:30px;border-radius:50%;background:var(--b-accent2);display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;color:var(--b-bg);letter-spacing:-1px}
+.c-float small{display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;color:var(--b-accent2)}
+.c-center{text-align:center}
+.c-fine{font-size:12.5px;color:var(--b-ink3);text-align:center;margin:-4px 0 0}
+/* setup */
+.c-tags{display:flex;gap:8px;flex-wrap:wrap}
+.c-tag{font-size:13px;font-weight:600;background:var(--b-surface);border-radius:999px;padding:6px 12px;color:var(--b-ink)}
+.c-tag.g{background:var(--b-green-chip);color:var(--b-primary)}
+.c-path{display:flex;gap:14px;align-items:center}
+.c-path img{width:92px;height:92px;border-radius:16px;object-fit:cover;flex:none}
+.c-path b{display:block;font-size:17px;font-weight:700;margin:4px 0 4px}
+.c-path p{margin:0;font-size:13.5px;line-height:1.4;color:var(--b-ink2)}
+.c-up{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--b-primary);background:var(--b-green-deep);border-radius:999px;padding:3px 8px}
+.c-up.am{color:var(--b-accent2);background:var(--b-hold)}
+.c-mini{display:flex;gap:12px;align-items:center;background:var(--b-surface);border-radius:18px;padding:13px 14px}
+.c-mini .c-ic{width:38px;height:38px;border-radius:12px;background:var(--b-green-chip);display:grid;place-items:center;flex:none}
+.c-mini .c-ic svg{width:20px;height:20px;stroke:var(--b-primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.c-mini b{display:block;font-size:15px}
+.c-mini div>span{display:block;font-size:13px;color:var(--b-ink2);margin-top:2px;line-height:1.35}
+/* market header */
+.c-mkt{flex:1;display:flex;justify-content:center;align-items:center;gap:10px;margin-right:42px}
+.c-mkt img{width:34px;height:34px;border-radius:50%}
+.c-mkt b{display:block;font-size:17px;line-height:1.1}
+.c-mkt span{display:block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--b-ink2)}
+.c-analyze{display:inline-flex;align-items:center;gap:7px;background:var(--b-primary);color:var(--b-primary-ink);font-weight:700;font-size:13.5px;border-radius:999px;padding:7px 13px}
+.c-analyze svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2}
+.c-drop{border:1.5px dashed rgba(255,255,255,.18);border-radius:20px;padding:16px;display:flex;align-items:center;gap:14px;color:var(--b-ink2);font-size:14px;line-height:1.4}
+.c-drop svg{width:26px;height:26px;stroke:var(--b-primary);fill:none;stroke-width:1.8;flex:none}
+.c-drop b{color:var(--b-ink);display:block;font-size:15px}
+/* scan */
+.c-steps{display:flex;flex-direction:column;gap:11px;margin:4px 2px}
+.c-step{display:flex;align-items:center;gap:12px;font-size:15.5px;font-weight:600}
+.c-step i{width:24px;height:24px;border-radius:50%;background:var(--b-primary);display:grid;place-items:center;flex:none}
+.c-step i::after{content:"";width:9px;height:5px;border:2.5px solid var(--b-primary-ink);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.c-step.wait{color:var(--b-ink2)}
+.c-step.wait i{background:var(--b-surface);box-shadow:inset 0 0 0 2px var(--b-primary)}
+.c-step.wait i::after{display:none}
+.c-proof{background:var(--b-surface);border-radius:20px;padding:15px 16px}
+.c-proof-h{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.c-faces{display:flex}
+.c-faces img{width:28px;height:28px;border-radius:50%;border:2px solid var(--b-surface);margin-left:-8px}
+.c-faces img:first-child{margin-left:0}
+.c-stars{color:var(--b-accent2);font-size:13px;letter-spacing:1px;margin-top:10px}
+.c-q{margin:6px 0 0;font-size:14.5px;line-height:1.45}
+.c-q b{display:block;margin-bottom:3px}
+.c-who{font-size:12.5px;color:var(--b-ink2);margin-top:7px}
+/* result */
+.c-tabs{display:flex;background:var(--b-surface);border-radius:16px;padding:4px;flex:none}
+.c-tabs span{flex:1;text-align:center;padding:8px;border-radius:12px;font-weight:600;font-size:15px;color:var(--b-ink2)}
+.c-tabs span.on{background:rgba(255,255,255,.12);color:var(--b-ink)}
+.c-hold{border-radius:24px;padding:14px 16px;background:radial-gradient(120% 100% at 85% 0%,var(--b-hold),var(--b-hold2) 70%);flex:none}
+.c-sig{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--b-accent2);background:rgba(240,169,62,.14);border-radius:999px;padding:5px 11px}
+.c-sig::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--b-accent2)}
+.c-hold-r{display:flex;justify-content:space-between;align-items:center;margin:8px 0 6px}
+.c-hold-r b{font-size:42px;font-weight:400;letter-spacing:-.02em;line-height:1}
+.c-pause{width:50px;height:50px;border-radius:50%;background:var(--b-accent2);display:grid;place-items:center}
+.c-pause::before{content:"";width:12px;height:16px;border-left:5px solid var(--b-bg);border-right:5px solid var(--b-bg);box-sizing:border-box}
+.c-hold p{margin:0;font-size:13px;line-height:1.38}
+.c-hold small{display:block;margin-top:7px;font-size:12px;color:var(--b-ink2)}
+.c-ins{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:none}
+.c-tile{background:var(--b-surface);border-radius:16px;padding:8px 12px}
+.c-tile span{display:block;font-size:13px;font-weight:600;color:var(--b-ink2)}
+.c-tile b{display:block;font-size:17px;font-weight:600;margin-top:2px}
+.c-tile b.r{color:var(--b-red)}.c-tile b.g{color:var(--b-primary)}.c-tile b.a{color:var(--b-accent2)}
+.c-locked{position:relative;border-radius:22px;overflow:hidden;flex:none}
+.c-blur{filter:blur(6px);opacity:.55;pointer-events:none}
+.c-lvl{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;padding:10px 0}
+.c-lvl em{flex:1;border-top:2px dashed var(--b-red-chip)}
+.c-lvl span{font-style:normal;border-radius:10px;padding:4px 10px;background:var(--b-red-chip);color:var(--b-red)}
+.c-lvl.s em{border-color:var(--b-green-chip)}.c-lvl.s span{background:var(--b-green-chip);color:var(--b-primary)}
+.c-lockover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;padding:14px;background:linear-gradient(180deg,rgba(8,12,19,.2),rgba(8,12,19,.78))}
+.c-lockover p{margin:0;font-size:14px;font-weight:600;line-height:1.35}
+.c-lockover svg{width:22px;height:22px;stroke:var(--b-primary);fill:none;stroke-width:2}
+.c-unlock{border:0;border-radius:999px;background:var(--b-primary);color:var(--b-primary-ink);font:700 15px var(--b-font);padding:11px 20px;cursor:pointer}
+.c-disc{font-size:10.5px;line-height:1.4;color:var(--b-ink3);text-align:center;margin:auto 0 0}
+/* paywall */
+.s-x{position:absolute;top:56px;right:18px;z-index:4;width:34px;height:34px;border-radius:50%;border:0;background:var(--b-surface);color:var(--b-ink2);font:600 15px var(--b-font);cursor:pointer;display:grid;place-items:center}
+.c-feats{display:flex;flex-direction:column;gap:11px;margin:4px 0}
+.c-feat{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.35}
+.c-feat i{width:22px;height:22px;border-radius:50%;background:var(--b-green-chip);flex:none;display:grid;place-items:center;margin-top:-1px}
+.c-feat i::after{content:"";width:8px;height:4px;border:2.2px solid var(--b-primary);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.c-plan{position:relative;display:flex;justify-content:space-between;align-items:center;width:100%;background:var(--b-surface);border:2px solid transparent;border-radius:20px;padding:15px 16px;color:var(--b-ink);cursor:pointer;font-family:var(--b-font);text-align:left}
+.c-plan.on{border-color:var(--b-primary);background:var(--b-long)}
+.c-plan b{display:block;font-size:17px}
+.c-plan small{display:block;font-size:13.5px;color:var(--b-ink2);margin-top:3px}
+.c-plan .c-pr{text-align:right;font-size:16px;font-weight:700;white-space:nowrap}
+.c-plan .c-pr small{font-weight:500}
+.c-save{position:absolute;top:-10px;right:16px;background:var(--b-primary);color:var(--b-primary-ink);font-size:11px;font-weight:800;letter-spacing:.06em;border-radius:999px;padding:3px 9px}
+.c-legal{display:flex;justify-content:center;gap:12px;font-size:11.5px;white-space:nowrap;color:var(--b-ink3);margin-top:-4px}
+.c-proofrow{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--b-ink2)}
+.c-proofrow b{color:var(--b-ink)}
+/* offer sheet */
+.c-handle{width:40px;height:5px;border-radius:5px;background:rgba(255,255,255,.2);align-self:center;margin-top:-30px}
+.c-off{background:radial-gradient(120% 100% at 85% 0%,var(--b-long),var(--b-surface) 75%);border:2px solid var(--b-primary);border-radius:24px;padding:20px 18px;text-align:center}
+.c-off small{display:block;font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--b-primary)}
+.c-off b{display:block;font-size:44px;font-weight:700;letter-spacing:-.02em;margin:8px 0 2px;white-space:nowrap}
+.c-off span{display:block;font-size:15px;color:var(--b-ink2)}
+.c-units{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.c-units div{background:var(--b-surface);border-radius:14px;padding:9px 6px;text-align:center;font-size:11.5px;font-weight:600;color:var(--b-ink2);line-height:1.25}
+.c-units div b{display:block;font-size:15px;color:var(--b-primary);margin-bottom:2px}
+
+.c-hero .c-chart.tall{height:270px;object-fit:cover;object-position:left top}
+.c-lv2{background:var(--b-surface);border-radius:18px;padding:6px 14px}
+.c-lv2 .c-lvl{padding:7px 0;font-size:14px}
+.c-lvl > span:first-child{background:none;color:inherit;padding:0}
+/* SCREENS:END */
+</style>
+</head>
+<body>
+
+<nav class="au-nav" aria-label="Sections">
+  <div class="au-nav-in">
+    <div class="au-brand">
+      <img src="assets/brand/appstore-icon.jpg" alt="">
+      <span>Growth Audit <small>· ChartDetector</small></span>
+    </div>
+    <a class="au-opt" href="#why">Why this</a>
+    <a href="#ideas">Five ideas</a>
+    <a href="#prototype">Prototype</a>
+    <a class="au-opt" href="#compare" id="navCompare" hidden>Paywall</a>
+  </div>
+</nav>
+
+<header class="au-top-hero" id="top">
+  <div class="au-wrap">
+    <p class="au-eyebrow"><i></i>Growth Audit · October 2026</p>
+    <h1 class="au-display">ChartDetector</h1>
+    <p class="au-lede">Five ideas to turn more traders into subscribers. <span>Each one built into your own onboarding, so you can tap through it.</span></p>
+    <p class="au-byline">Prepared by Adapty for the ChartDetector team</p>
+    <div class="au-ctas">
+      <a class="au-btn" href="#ideas">See the five ideas</a>
+      <a class="au-lnk" href="#prototype">Open the prototype</a>
+      <button type="button" class="au-lnk au-play" id="heroVideo" hidden>Watch the 30-second walkthrough</button>
+    </div>
+  </div>
+  <!-- filled from CONTENT.hero: three screen ids → assets/hero/<id>.png (make them with hero-stills.sh) -->
+  <div class="au-phones" id="heroPhones" aria-label="Three screens from the prototype"></div>
+</header>
+
+<section class="au-sec au-white" id="why">
+  <div class="au-wrap">
+    <div class="au-split">
+      <div>
+        <p class="au-kicker">Why you’re seeing this</p>
+        <h2 class="au-h2">30,000 subscription apps taught us what moves conversion. <span>Here’s what we’d test first at ChartDetector.</span></h2>
+      </div>
+      <div>
+        <p>Adapty runs subscriptions for <b>more than 30,000 apps</b>, so we see which onboarding and paywall changes lift revenue across the whole market, not just inside one app.</p>
+        <p>We pointed that at ChartDetector. We took <b>your own screens, copy and prices</b> from your App Store listing and chartdetectorai.com, and rebuilt the path from install to paywall around the five ideas with the most potential.</p>
+      </div>
+    </div>
+    <div class="au-stats">
+      <div class="au-stat"><b>30,000+</b><span>apps run their subscriptions on Adapty</span></div>
+      <div class="au-stat"><b>5</b><span>ideas, each built as a working screen</span></div>
+      <div class="au-stat"><b>0</b><span>changes to your art direction</span></div>
+    </div>
+    <div class="au-notes">
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg></div>
+        <h3>Five ideas, not fifteen</h3>
+        <p>We’re not proposing to rebuild every screen. These are the changes with the highest potential, ranked by what we’d test first.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M3.5 12h17"/></svg></div>
+        <h3>Your design, not ours</h3>
+        <p>Every colour, control and price in the prototype is ChartDetector’s. We changed the order and what gets shown.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4H15"/></svg></div>
+        <h3>We hope you haven’t tried these yet</h3>
+        <p>We work from the outside, so we can’t see your live flow or your test history. If you’ve already run one of these, tell us and we’ll go deeper on the rest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec" id="ideas">
+  <div class="au-wrap">
+    <div class="au-ideas-h">
+      <p class="au-kicker">The shortlist</p>
+      <h2 class="au-h2">Five ideas. <span>Ranked by what we’d test first.</span></h2>
+    </div>
+    <div class="au-list" id="ideaList"></div>
+    <div class="au-band">
+      <div>
+        <p class="au-k">Potential outcome, based on Adapty data</p>
+        <h3>Together they work on three moments: what you ask, what ChartDetector shows before the paywall, and what happens when someone says no.</h3>
+        <p class="au-fn" id="bandFn"></p>
+        <a class="au-btn" href="#prototype">Tap through the prototype</a>
+      </div>
+      <div class="au-nums" id="bandNums"></div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec au-white" id="prototype">
+  <div class="au-wrap">
+    <div class="au-proto-h">
+      <p class="au-kicker">The prototype</p>
+      <h2 class="au-h2">Every idea, inside your own onboarding.</h2>
+      <p>Tap through it like a new user, or jump straight to an idea. Green numbers mark the screens that carry one.</p>
+    </div>
+    <div class="au-langrow" id="langRow" hidden><span>Prototype language</span><div class="au-lsw" id="langSw" role="group" aria-label="Prototype language"></div></div>
+    <div class="au-seg" id="chips" role="tablist" aria-label="Screens"></div>
+    <div class="au-stage">
+      <div class="phone"><div class="phone-in">
+        <div class="island"></div>
+        <div class="sbar"><span>9:41</span><span>●●● ▮</span></div>
+
+<!-- SCREENS:START — one section.scr[data-id=ID] per screen, in flow order. Only the screens an idea lands on,
+     plus the context needed to read the flow (~8–10). Wiring: data-go="<id>" · data-back · data-pick="key:value"
+     (+ data-advance="<id>") · data-toggle="key:value" · data-bind="key" / "label:key" / "count:key" ·
+     data-requires="key" · data-show="key:value" · data-input="key" · class="scr sheet" slides up (offer paywall).
+     RULE: images only from assets/ (their app, their site, App Store) — never stock, never hotlinked.
+     Extras: data-t="key" = translatable (markup is CONTENT.langs[0]; other languages in CONTENT.i18n) — keep data-t on
+     leaf-ish elements, never on an element that also carries data-bind/data-pick/data-show;
+     data-langtoggle cycles the language (their own language pill); data-aside keeps a screen out of the flow
+     (the paywall TODAY, rendered only for the side-by-side still). -->
+
+<section class="scr" data-id="welcome">
+  <div class="c-glow"></div>
+  <div class="s-pad">
+    <div class="c-brand"><img src="assets/crop/candles.png" alt=""><span>ChartDetector AI</span></div>
+    <div class="c-hero">
+      <img class="c-chart" src="assets/crop/gold-chart.png" alt="">
+      <div class="c-scan"></div>
+    </div>
+    <div class="c-hold" style="padding:13px 16px;margin-top:-4px"><div class="c-hold-r" style="margin:0"><div><span class="c-sig" data-t="r_sig0">CHART SIGNAL</span><b style="display:block;margin-top:6px;font-size:34px">Hold</b></div><span class="c-pause"></span></div></div>
+    <h1 class="c-h c-center" data-t="w_h">Photograph any chart. Get the verdict in seconds.</h1>
+    <p class="c-sub c-center" data-t="w_s">Snap your screen or drop in a screenshot. Get a clear Long, Short or Hold for stocks, crypto, forex and commodities.</p>
+    <button class="c-cta" data-go="markets"><span data-t="w_cta">Get started</span></button>
+    <p class="c-fine" data-t="w_f">iPhone &amp; Android · 7 languages · 130 markets</p>
+  </div>
+</section>
+
+<section class="scr" data-id="markets">
+  <div class="c-glow"></div>
+  <div class="s-pad">
+    <div class="c-top"><button class="c-back" data-back aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><div class="c-prog"><i style="width:25%"></i></div></div>
+    <h1 class="c-h" data-t="m_h">What do you trade?</h1>
+    <p class="c-sub" data-t="m_s">Pick all that apply. Your examples and daily briefing follow these markets.</p>
+    <button class="c-opt" data-toggle="mk:stocks"><img src="assets/site/stock-AAPL.png" alt=""><span class="c-tx"><span data-t="mk_stocks">Stocks &amp; ETFs</span></span><span class="c-ck"></span></button>
+    <button class="c-opt" data-toggle="mk:crypto"><img src="assets/site/crypto-btc.png" alt=""><span class="c-tx"><span data-t="mk_crypto">Crypto</span></span><span class="c-ck"></span></button>
+    <button class="c-opt" data-toggle="mk:forex"><img src="assets/site/forex-eur.png" alt=""><span class="c-tx"><span data-t="mk_forex">Forex</span></span><span class="c-ck"></span></button>
+    <button class="c-opt" data-toggle="mk:comm"><img src="assets/crop/gold-icon.png" alt=""><span class="c-tx"><span data-t="mk_comm">Commodities</span></span><span class="c-ck"></span></button>
+    <button class="c-cta" data-go="level" data-requires="mk"><span data-t="cont">Continue</span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="level">
+  <div class="c-glow"></div>
+  <div class="s-pad">
+    <div class="c-top"><button class="c-back" data-back aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><div class="c-prog"><i style="width:50%"></i></div></div>
+    <h1 class="c-h" data-t="l_h">How much trading experience do you have?</h1>
+    <p class="c-sub" data-t="l_s">So we start you in the right place.</p>
+    <button class="c-opt" data-pick="lvl:new" data-advance="goal"><span class="c-ic"><svg viewBox="0 0 24 24"><path d="M12 3v3M5.6 5.6l2.1 2.1M3 12h3M18.4 5.6l-2.1 2.1M21 12h-3"/><circle cx="12" cy="15" r="5"/></svg></span><span class="c-tx"><span data-t="l_new">I’m just starting</span><small data-t="l_new_s">Never or rarely read a chart</small></span></button>
+    <button class="c-opt" data-pick="lvl:some" data-advance="goal"><span class="c-ic"><svg viewBox="0 0 24 24"><path d="M4 19h16M7 15v-4M12 15V8M17 15v-6"/></svg></span><span class="c-tx"><span data-t="l_some">I trade now and then</span><small data-t="l_some_s">I know the basics</small></span></button>
+    <button class="c-opt" data-pick="lvl:pro" data-advance="goal"><span class="c-ic"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg></span><span class="c-tx"><span data-t="l_pro">I trade actively</span><small data-t="l_pro_s">Charts every day, 2+ years</small></span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="goal">
+  <div class="c-glow"></div>
+  <div class="s-pad">
+    <div class="c-top"><button class="c-back" data-back aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><div class="c-prog"><i style="width:75%"></i></div></div>
+    <h1 class="c-h" data-t="g_h">What should ChartDetector do for you first?</h1>
+    <button class="c-opt" data-pick="goal:learn" data-advance="setup"><span class="c-ic"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg></span><span class="c-tx"><span data-t="g_learn">Teach me to read charts</span><small data-t="g_learn_s">Step by step, with quizzes</small></span></button>
+    <button class="c-opt" data-pick="goal:check" data-advance="setup"><span class="c-ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span class="c-tx"><span data-t="g_check">A second opinion before I trade</span><small data-t="g_check_s">Check my own read of a chart</small></span></button>
+    <button class="c-opt" data-pick="goal:time" data-advance="setup"><span class="c-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span><span class="c-tx"><span data-t="g_time">Save time on analysis</span><small data-t="g_time_s">The read in seconds, not an hour</small></span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="setup">
+  <div class="c-glow"></div>
+  <div class="s-pad">
+    <div class="c-top"><button class="c-back" data-back aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><div class="c-prog"><i style="width:100%"></i></div></div>
+    <p class="c-lab"><svg viewBox="0 0 24 24"><path d="M12 3l2.4 5 5.6.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.6-.8z"/></svg><span data-t="s_lab">Your setup</span></p>
+    <h1 class="c-h" id="setupH" style="margin-top:0">Let’s teach you to read charts</h1>
+    <div class="c-tags"><span class="c-tag g" data-bind="label:mk"></span><span class="c-tag" data-bind="label:lvl"></span></div>
+    <div class="c-card c-path" data-track="learn"><img src="assets/site/academy-market-basics.png" alt=""><div><span class="c-up" data-t="s_up">START HERE</span><b data-t="s_ac_t">Academy · Market Basics</b><p data-t="s_ac_p">Short lessons with quizzes and audio. From Beginner to Expert in 30 Days.</p></div></div>
+    <div class="c-card c-path" data-track="trade"><img src="assets/site/academy-trends-levels.png" alt=""><div><span class="c-up am" data-t="s_up2">YOUR SECOND OPINION</span><b data-t="s_so_t">Any chart, any platform</b><p data-t="s_so_p">TradingView, MetaTrader or your bank’s app. Long, Short or Hold, with key levels.</p></div></div>
+    <div class="c-mini"><span class="c-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 2.5 14.4 0 17M12 3.5c-2.5 2.6-2.5 14.4 0 17"/></svg></span><div><b data-t="s_br_t">Daily Briefing, every morning</b><span><span data-t="s_br_p">What moved overnight in</span> <span data-bind="label:mk"></span><span data-t="s_br_p2">, summarized before you trade.</span></span></div></div>
+    <div class="c-mini" data-track="learn2"><span class="c-ic"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg></span><div><b data-t="s_an_t">Analysis when you’re ready</b><span data-t="s_an_p">Photograph any chart and see how it’s read.</span></div></div>
+    <div class="c-mini" data-track="trade2"><span class="c-ic"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg></span><div><b data-t="s_ac2_t">Academy, if you want it</b><span data-t="s_ac2_p">8 units, from chart patterns to trading psychology.</span></div></div>
+    <button class="c-cta" data-go="pick"><span data-t="s_cta">Try it on a live chart</span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="pick">
+  <div class="c-glow"></div>
+  <div class="s-pad">
+    <div class="c-top"><button class="c-back" data-back aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button></div>
+    <h1 class="c-h" data-t="p_h">Try your first analysis</h1>
+    <p class="c-sub" data-t="p_s">Today’s chart is ready, or bring your own screenshot.</p>
+    <div class="c-card" style="padding:12px">
+      <div class="c-top" style="min-height:0;margin:2px 4px 10px"><div class="c-mkt" style="justify-content:flex-start;margin:0"><img src="assets/crop/gold-icon.png" alt=""><div><b>Gold</b><span>XAUUSD</span></div></div><span class="c-analyze"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-t="p_btn">Analyze Chart</span></span></div>
+      <img class="c-chart" src="assets/crop/gold-chart.png" alt="">
+    </div>
+    <div class="c-drop"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 15v4h16v-4"/></svg><div><b data-t="p_up">Upload a screenshot or photo</b><span data-t="p_up_s">Works with TradingView, MetaTrader or your bank’s app.</span></div></div>
+    <button class="c-cta" data-go="scan"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-t="p_cta">Analyze Gold chart</span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="scan">
+  <div class="c-glow"></div>
+  <div class="s-pad">
+    <div class="c-top"><div class="c-mkt" style="margin:0"><img src="assets/crop/gold-icon.png" alt=""><div><b>Gold</b><span>XAUUSD</span></div></div></div>
+    <div class="c-hero"><img class="c-chart" src="assets/crop/gold-chart.png" alt=""><div class="c-scan" style="top:62%"></div></div>
+    <div class="c-steps">
+      <div class="c-step"><i></i><span data-t="sc_1">Detecting patterns</span></div>
+      <div class="c-step"><i></i><span data-t="sc_2">Mapping support &amp; resistance</span></div>
+      <div class="c-step wait" id="scStep3"><i></i><span data-t="sc_3">Reading market sentiment</span></div>
+    </div>
+    <div class="c-proof">
+      <div class="c-proof-h"><span class="c-faces"><img src="assets/site/rev-theresakahri.png" alt=""><img src="assets/site/rev-lenamnn.png" alt=""><img src="assets/site/rev-bettimei.png" alt=""></span><span data-t="sc_pr">Loved by 150,000+ traders</span></div>
+      <div class="c-stars">★★★★★</div>
+      <p class="c-q" data-track="learn"><b data-t="rv1_t">Perfect trading app for beginners</b><span data-t="rv1">“The app is very clear and well laid out. As a trading beginner it’s a great app for me.”</span></p>
+      <p class="c-q" data-track="trade"><b data-t="rv2_t">Good quality, feels trustworthy!</b><span data-t="rv2">“I’ve tested quite a few trading apps and many feel cluttered. ChartDetector AI feels serious and cleanly built.”</span></p>
+      <div class="c-who" data-track="learn">TheresaKahri · App Store</div>
+      <div class="c-who" data-track="trade">BettiMei · App Store</div>
+    </div>
+    <button class="c-cta" data-go="result"><span data-t="sc_cta">See the analysis</span></button>
+  </div>
+</section>
+
+<section class="scr" data-id="result">
+  <div class="c-glow amber"></div>
+  <div class="s-pad" style="gap:9px;padding-bottom:14px">
+    <div class="c-top"><button class="c-back" data-back aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><div class="c-mkt"><img src="assets/crop/gold-icon.png" alt=""><div><b>Gold</b><span>XAUUSD</span></div></div></div>
+    <img class="c-chart" src="assets/crop/gold-chart.png" alt="" style="height:92px;object-fit:cover;object-position:left 30%;flex:none">
+    <div class="c-tabs"><span class="on" data-t="r_tech">Technical</span><span data-t="r_news">News</span></div>
+    <div class="c-hold">
+      <span class="c-sig" data-t="r_sig">CHART SIGNAL</span>
+      <div class="c-hold-r"><b>Hold</b><span class="c-pause"></span></div>
+      <p data-t="r_hold">Holding is recommended until a clear breakout from the current consolidation range occurs, ensuring risk is minimized by observing support and resistance levels closely.</p>
+      <small data-t="r_read">Read from the price action in your chart</small>
+    </div>
+    <div class="c-ins">
+      <div class="c-tile"><span data-t="r_trend">Trend</span><b class="r" data-t="r_down">Down</b></div>
+      <div class="c-tile"><span data-t="r_vol">Volatility</span><b class="r" data-t="r_high">High</b></div>
+      <div class="c-tile"><span data-t="r_volu">Volume</span><b class="g" data-t="r_high2">High</b></div>
+      <div class="c-tile"><span data-t="r_sent">Sentiment</span><b class="a" data-t="r_neutral">Neutral</b></div>
+    </div>
+    <div class="c-locked">
+      <div class="c-card c-blur">
+        <div class="c-lvl"><span style="background:none;color:inherit;padding:0" data-t="r_res">Resistance</span><em></em><span>4,250</span></div>
+        <div class="c-lvl s"><span style="background:none;color:inherit;padding:0" data-t="r_sup">Support</span><em></em><span>4,100</span></div>
+        <div class="c-lvl"><span style="background:none;color:inherit;padding:0">Falling Wedge</span><em style="border:0"></em></div>
+      </div>
+      <div class="c-lockover"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg><p data-t="r_lock">Key levels, the pattern ChartDetector found and the risk assessment</p><button class="c-unlock" data-go="paywall"><span data-t="r_unlock">Unlock the full read</span></button></div>
+    </div>
+    <p class="c-disc" data-t="r_disc">AI-generated analysis – no trading or investment advice! For educational purposes only. Liability is excluded!</p>
+  </div>
+</section>
+
+<section class="scr" data-id="paywall">
+  <div class="c-glow"></div>
+  <button class="s-x" data-go="offer" aria-label="Close">✕</button>
+  <div class="s-pad" style="gap:13px">
+    <div class="c-brand" style="align-items:flex-start;margin-top:4px"><img src="assets/crop/candles.png" alt="" style="width:40px"></div>
+    <h1 class="c-h" id="pwH" style="margin-top:0">Go from beginner to expert in 30 days</h1>
+    <div class="c-feats">
+      <div class="c-feat"><i></i><span data-t="pw_f1">The full read on every chart: key levels, patterns, risk</span></div>
+      <div class="c-feat"><i></i><span><span data-t="pw_f2">Your daily briefing for</span> <span data-bind="label:mk"></span></span></div>
+      <div class="c-feat"><i></i><span data-t="pw_f3">All 8 Academy units, with quizzes and audio</span></div>
+      <div class="c-feat"><i></i><span data-t="pw_f4">130 markets, 7 languages</span></div>
+    </div>
+    <div class="c-lv2">
+      <div class="c-lvl"><span data-t="r_res2">Resistance</span><em></em><span>4,250</span></div>
+      <div class="c-lvl s"><span data-t="r_sup2">Support</span><em></em><span>4,100</span></div>
+      <div class="c-lvl" style="color:var(--b-ink2)"><span style="background:var(--b-green-chip);color:var(--b-primary)" data-t="pw_pat">Falling Wedge found</span><em style="border:0"></em><span style="background:none;color:var(--b-ink2);padding:0" data-t="pw_gold">Gold · XAUUSD</span></div>
+    </div>
+    <div class="c-proofrow"><span class="c-faces"><img src="assets/site/rev-theresakahri.png" alt=""><img src="assets/site/rev-lenamnn.png" alt=""><img src="assets/site/rev-bettimei.png" alt=""></span><span><b data-t="pw_pr1">150,000+ traders</b> <span data-t="pw_pr2">use ChartDetector AI</span></span></div>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
+      <button class="c-plan" data-pick="plan:year"><span class="c-save" data-t="pw_save">SAVE 90%</span><span><b data-t="pw_yr">Yearly</b><small data-t="pw_yr_s">$49.99 a year</small></span><span class="c-pr"><span data-t="pw_yrw">$0.96</span><small data-t="pw_wk_u">per week</small></span></button>
+      <button class="c-plan" data-pick="plan:week"><span><b data-t="pw_wkn">Weekly</b><small data-t="pw_wk_s">Billed every week</small></span><span class="c-pr"><span data-t="pw_wk">$9.99</span><small data-t="pw_wk_u2">per week</small></span></button>
+      <button class="c-cta" style="margin-top:2px" data-go="offer"><span data-t="cont2">Continue</span></button>
+      <div class="c-legal"><span data-t="pw_cancel">Cancel anytime</span><span data-t="pw_restore">Restore</span><span data-t="pw_terms">Terms</span><span data-t="pw_priv">Privacy</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="scr sheet" data-id="offer">
+  <div class="c-glow"></div>
+  <button class="s-x" data-go="paywall" aria-label="Close">✕</button>
+  <div class="s-pad" style="padding-top:96px;gap:15px">
+    <h1 class="c-h" data-t="o_h">Not ready for a whole year?</h1>
+    <p class="c-sub" data-t="o_s">Take six months instead. The same full access, half the commitment.</p>
+    <div class="c-off"><small data-t="o_k">6 MONTHS</small><b data-t="o_p">$34.99</b><span data-t="o_pw">$1.35 a week · 87% less than weekly</span></div>
+    <p class="c-lab" style="margin-top:4px"><svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></svg><span data-t="o_lab">Time for all 8 Academy units</span></p>
+    <div class="c-units">
+      <div><b>1</b><span data-t="u1">Market Basics</span></div><div><b>2</b><span data-t="u2">Reading Charts</span></div><div><b>3</b><span data-t="u3">Trends &amp; Levels</span></div><div><b>4</b><span data-t="u4">Chart Patterns</span></div>
+      <div><b>5</b><span data-t="u5">Candlesticks</span></div><div><b>6</b><span data-t="u6">Risk</span></div><div><b>7</b><span data-t="u7">Indicators</span></div><div><b>8</b><span data-t="u8">Psychology</span></div>
+    </div>
+    <button class="c-cta" data-go="paywall"><span data-t="o_cta">Get 6 months for $34.99</span></button>
+    <button class="c-link" data-go="paywall"><span data-t="o_no">No thanks</span></button>
+  </div>
+</section>
+<!-- SCREENS:END -->
+
+      </div></div>
+      <div class="au-pn" id="panel" aria-live="polite"></div>
+    </div>
+    <p class="au-hint">Close the paywall with ✕ to see idea 5. Switch the experience answer to see the second path.</p>
+    <!-- shown when CONTENT.liveUrl is set: assets/qr-app.png = qr.swift "<liveUrl>?app" -->
+    <div class="au-qr" id="qrCard" hidden><img src="assets/qr-app.png" alt="QR code that opens the prototype full screen"><div><b>Try it on your phone</b><p>Scan to open the prototype full screen, the way a new user would see it.</p></div></div>
+    <div class="au-mobw" id="qrMob" hidden><a class="au-btn" href="?app">Open it full screen</a></div>
+  </div>
+</section>
+
+<!-- the paywall TODAY vs PROPOSED — built from CONTENT.compare (stills: assets/hero/<today>.png, <proposed>.png) -->
+<section class="au-sec" id="compare" hidden><div class="au-wrap" id="cmpBody"></div></section>
+
+<footer class="au-foot" id="sources">
+  <div class="au-wrap">
+    <details id="srcDetails">
+      <summary>Where the numbers come from</summary>
+      <div class="au-srcs" id="srcBody"></div>
+    </details>
+    <p class="au-fine" id="fine"></p>
+    <div class="au-cta-line">
+      <p>Every screen here can be built and A/B tested in Adapty’s Flow Builder, with no app release.</p>
+      <a class="au-btn" href="https://adapty.io/flow-paywall-builder/" target="_blank" rel="noopener">About Flow Builder</a>
+    </div>
+  </div>
+</footer>
+
+<!-- extras: video dialog (CONTENT.video), ?app bar, ?tour overlay (CONTENT.tour) -->
+<dialog class="au-vid" id="vid" aria-label="Walkthrough video">
+  <div class="au-vid-in"><video id="vidEl" controls muted playsinline preload="none"></video></div>
+  <div class="au-vid-bar"><a id="vidDl" download>Download the MP4</a><button type="button" class="au-vid-x" id="vidX">Close</button></div>
+</dialog>
+<div class="au-scrim" id="abScrim"></div>
+<div class="au-appbar" id="appbar">
+  <button type="button" class="au-ab-why" id="abWhy"><i></i><span id="abT"></span><em>Why ↑</em></button>
+  <div class="au-lsw" id="abLang" role="group" aria-label="Language"></div>
+</div>
+<div class="au-tour" aria-hidden="true">
+  <div class="au-tb"><img src="assets/brand/appstore-icon.jpg" alt="">Growth Audit <small>· ChartDetector</small></div>
+  <div class="au-tby">Prepared by Adapty</div>
+  <div class="au-tcap" id="tCap"></div>
+  <div class="au-ttap" id="tTap"></div>
+  <div class="au-tprog"><i id="tProg"></i></div>
+  <div class="au-tintro" id="tIntro"></div>
+  <div class="au-tend" id="tEnd"></div>
+</div>
+
+<!-- CONTENT — all the audit's words and numbers, as data. Schema (brand-check enforces it):
+     ideas  : 3–5 rows, ranked (the audit is five ideas, never fifteen). screen = the screen that shows it.
+     panel  : one entry per screen. idea = its number in ideas (1-based) or 0 for a context screen.
+              why on an idea screen reads "<b>Try</b> X, <b>because</b> Y." in ≤ 45 words; iv = its range.
+              why on a context screen is one line saying what it sets up.
+     hero   : three screen ids shown as stills in the hero — run hero-stills.sh after the screens are done.
+     outcome: combined "up to" numbers, PS-deck style, never above the ceiling of the per-idea ranges.
+     sources: public facts only — App Store, their site, their screens. No sales research on this page.
+     EXTRAS (each one hides itself when left empty):
+     langs  : [{"code":"en","name":"English"},{"code":"es","name":"Español · Spain prices"}] — first = the markup's language
+     i18n   : {"es": {"<data-t key>": "text with {tokens}"}} — every data-t key, for every language after the first
+     prices : {"es": {"yr": "39,99 €", …}} — {tokens} in i18n strings; that storefront's real IAP prices
+     labelsI18n: {"es": {"goal": {"a": "…"}}} — C.labels per language (data-bind="label:…")
+     liveUrl: final Pages URL (QR card + video end card); the QR file encodes liveUrl + "?app"
+     video / poster: "assets/walkthrough.mp4" / "assets/walkthrough-poster.jpg" (record-video.sh)
+     compare: {today, proposed, kicker, title, sub, todayCap, rows:[{h, idea, was, now}], kept} — today = a data-aside screen
+     tour   : {segments:[{id, d, st, tap:[selector-in-screen, ms], pop, reveal, end}], captions:{id:{n|k, t, l, o, ol}},
+              introLede, endTitle} — ~30 s total; the last segment has end:true (the end card) -->
+<script type="application/json" id="content">
+{
+ "app": "ChartDetector",
+ "state": {
+  "mk": [
+   "crypto"
+  ],
+  "lvl": "new",
+  "goal": "learn",
+  "plan": "year"
+ },
+ "labels": {
+  "mk": {
+   "stocks": "Stocks",
+   "crypto": "Crypto",
+   "forex": "Forex",
+   "comm": "Commodities"
+  },
+  "lvl": {
+   "new": "Beginner",
+   "some": "Occasional trader",
+   "pro": "Active trader"
+  }
+ },
+ "chips": {
+  "welcome": "Welcome",
+  "markets": "Markets",
+  "level": "Experience",
+  "goal": "Goal",
+  "setup": "Your setup",
+  "pick": "First chart",
+  "scan": "Analyzing",
+  "result": "Result",
+  "paywall": "Paywall",
+  "offer": "On close"
+ },
+ "hero": [
+  "setup",
+  "result",
+  "paywall"
+ ],
+ "outcome": {
+  "cr": "+25%",
+  "arpu": "+20%"
+ },
+ "ideas": [
+  {
+   "screen": "setup",
+   "title": "Use the three answers you collect",
+   "what": "Ask what they trade, how long they’ve traded and what they want first, then play it back. Beginners land on the Academy (“From Beginner to Expert in 30 Days”), active traders on the second opinion, and the paywall headline names their goal and their markets.",
+   "impact": "+10–20%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "result",
+   "title": "Let ChartDetector read a chart before you ask for money",
+   "what": "One tap on today’s Gold chart gives the <b>Hold</b> verdict and the trend, volatility, volume and sentiment tiles for free. Key levels (4,250 / 4,100), the falling wedge and the risk assessment stay locked, so the paywall sells the rest of an analysis they’ve already started reading.",
+   "impact": "+10–25%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "scan",
+   "title": "Earn trust while the AI works",
+   "what": "The seconds of “Detecting patterns · Mapping support &amp; resistance” are when people decide whether to believe an AI verdict. Show the 150,000+ traders from your site there, with an App Store review picked for their level: a beginner’s review for beginners, a seasoned tester’s for active traders.",
+   "impact": "+3–8%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "paywall",
+   "title": "Make the yearly plan the obvious choice",
+   "what": "Your listing carries ten price points. Show two: <code>Yearly $49.99</code>, preselected and written as $0.96 a week, next to <code>Weekly $9.99</code>. The 90% saving does the selling, and fewer choices means a faster yes.",
+   "impact": "+10–20%",
+   "il": "ARPU"
+  },
+  {
+   "screen": "offer",
+   "title": "Catch the people who close the paywall",
+   "what": "Answer ✕ with a plan you already sell: <code>6 Months $34.99</code>, $1.35 a week and 87% less than weekly. A shorter commitment, not a fake discount and no countdown, framed as time for all 8 Academy units.",
+   "impact": "+5–10%",
+   "il": "CR to purchase"
+  }
+ ],
+ "panel": {
+  "welcome": {
+   "idea": 0,
+   "t": "One photo, a verdict in seconds",
+   "why": "Your site’s promise as the first screen, on your own Gold chart. The three questions after it set up idea 1."
+  },
+  "markets": {
+   "idea": 0,
+   "t": "What do you trade?",
+   "why": "First of three questions. The markets picked here name the daily briefing and the paywall later on."
+  },
+  "level": {
+   "idea": 0,
+   "t": "How experienced are you?",
+   "why": "This answer decides the path: beginners go Academy-first, active traders go analysis-first."
+  },
+  "goal": {
+   "idea": 0,
+   "t": "What should it do first?",
+   "why": "What they want first becomes the headline on the setup screen and on the paywall."
+  },
+  "setup": {
+   "idea": 1,
+   "t": "Use the three answers you collect",
+   "why": "<b>Try</b> a setup screen that plays their answers back, Academy-first for beginners and second-opinion-first for active traders, <b>because</b> people commit faster to a plan that already names their markets and level, and one path can’t fit both groups.",
+   "iv": "CR +10–20%",
+   "il": "to purchase",
+   "also": "Switch the answer on the Experience screen to see the other path."
+  },
+  "pick": {
+   "idea": 0,
+   "t": "A real chart, one tap away",
+   "why": "Today’s Gold chart with your own ‘Analyze Chart’ button, plus the screenshot upload. Sets up idea 2."
+  },
+  "scan": {
+   "idea": 3,
+   "t": "Earn trust while the AI works",
+   "why": "<b>Try</b> showing 150,000+ traders and one App Store review matched to their level while the chart is read, <b>because</b> trusting an AI verdict is the real objection in this category, and the wait is when people look for a reason to.",
+   "iv": "CR +3–8%",
+   "il": "to purchase"
+  },
+  "result": {
+   "idea": 2,
+   "t": "Let it read a chart before you ask for money",
+   "why": "<b>Try</b> giving the verdict and the four insights for free and locking key levels, the pattern and the risk read, <b>because</b> someone who has seen ChartDetector read a chart pays for the rest; a paywall before that asks them to pay for a promise.",
+   "iv": "CR +10–25%",
+   "il": "to purchase",
+   "also": "The disclaimer stays on screen, word for word."
+  },
+  "paywall": {
+   "idea": 4,
+   "t": "Make the yearly plan the obvious choice",
+   "why": "<b>Try</b> two plans instead of the ten price points on your listing, Yearly preselected and shown as $0.96 a week, <b>because</b> fewer choices convert faster and a weekly price next to $9.99 makes the 90% saving obvious.",
+   "iv": "ARPU +10–20%",
+   "il": "from the plan mix",
+   "also": "The headline is idea 1 (it follows their goal); the trader count is idea 3."
+  },
+  "offer": {
+   "idea": 5,
+   "t": "Catch the people who close the paywall",
+   "why": "<b>Try</b> answering ✕ with six months for $34.99, $1.35 a week, <b>because</b> people who close a yearly paywall often object to the commitment, not the product, and a shorter real plan wins some back without discounting the year.",
+   "iv": "CR +5–10%",
+   "il": "to purchase, from people who close"
+  }
+ },
+ "langs": [
+  {
+   "code": "en",
+   "name": "English · US prices"
+  },
+  {
+   "code": "de",
+   "name": "Deutsch · deutsche Preise"
+  }
+ ],
+ "i18n": {
+  "de": {
+   "w_h": "Fotografiere jeden Chart. Erhalte das Urteil in Sekunden.",
+   "w_s": "Mach einen Screenshot oder ein Foto. Du bekommst ein klares Long, Short oder Hold für Aktien, Krypto, Forex und Rohstoffe.",
+   "w_cta": "Los geht’s",
+   "w_f": "iPhone &amp; Android · 7 Sprachen · 130 Märkte",
+   "m_h": "Was tradest du?",
+   "m_s": "Wähle alles, was passt. Beispiele und dein Daily Briefing richten sich danach.",
+   "mk_stocks": "Aktien &amp; ETFs",
+   "mk_crypto": "Krypto",
+   "mk_forex": "Forex",
+   "mk_comm": "Rohstoffe",
+   "cont": "Weiter",
+   "cont2": "Weiter",
+   "l_h": "Wie viel Trading-Erfahrung hast du?",
+   "l_s": "Damit du an der richtigen Stelle startest.",
+   "l_new": "Ich fange gerade an",
+   "l_new_s": "Ich lese selten oder nie Charts",
+   "l_some": "Ich trade ab und zu",
+   "l_some_s": "Ich kenne die Grundlagen",
+   "l_pro": "Ich trade aktiv",
+   "l_pro_s": "Täglich Charts, seit 2+ Jahren",
+   "g_h": "Wobei soll ChartDetector dir zuerst helfen?",
+   "g_learn": "Bring mir Chartlesen bei",
+   "g_learn_s": "Schritt für Schritt, mit Quiz",
+   "g_check": "Eine zweite Meinung vor dem Trade",
+   "g_check_s": "Meine eigene Analyse prüfen",
+   "g_time": "Zeit bei der Analyse sparen",
+   "g_time_s": "Die Analyse in Sekunden statt in einer Stunde",
+   "s_lab": "Dein Setup",
+   "s_up": "HIER STARTEN",
+   "s_ac_t": "Akademie · Marktgrundlagen",
+   "s_ac_p": "Kurze Lektionen mit Quiz und Audio. Vom Anfänger zum Experten in 30 Tagen.",
+   "s_up2": "DEINE ZWEITE MEINUNG",
+   "s_so_t": "Jeder Chart, jede Plattform",
+   "s_so_p": "TradingView, MetaTrader oder die App deiner Bank. Long, Short oder Hold, mit Key Levels.",
+   "s_br_t": "Daily Briefing, jeden Morgen",
+   "s_br_p": "Was über Nacht passiert ist bei",
+   "s_br_p2": ", zusammengefasst vor deinem Trade.",
+   "s_an_t": "Analysen, wenn du so weit bist",
+   "s_an_p": "Fotografiere einen Chart und sieh, wie er gelesen wird.",
+   "s_ac2_t": "Die Akademie, wenn du willst",
+   "s_ac2_p": "8 Units, von Chartmustern bis Trading-Psychologie.",
+   "s_cta": "Am echten Chart ausprobieren",
+   "p_h": "Deine erste Analyse",
+   "p_s": "Der Chart von heute ist bereit, oder nimm deinen eigenen Screenshot.",
+   "p_btn": "Chart analysieren",
+   "p_up": "Screenshot oder Foto hochladen",
+   "p_up_s": "Funktioniert mit TradingView, MetaTrader oder der App deiner Bank.",
+   "p_cta": "Gold-Chart analysieren",
+   "sc_1": "Muster erkennen",
+   "sc_2": "Support &amp; Resistance einzeichnen",
+   "sc_3": "Marktstimmung lesen",
+   "sc_pr": "Über 150.000 Trader vertrauen darauf",
+   "rv1_t": "Perfekte Trading-App für Anfänger",
+   "rv1": "„Die App ist sehr übersichtlich und klar aufgebaut. Für mich als Trading-Anfänger eine super App.“",
+   "rv2_t": "Gute Qualität, wirkt vertrauenswürdig!",
+   "rv2": "„Ich habe einige Trading-Apps getestet, viele wirken überladen. ChartDetector AI wirkt seriös und sauber gebaut.“",
+   "sc_cta": "Zur Analyse",
+   "r_tech": "Technisch",
+   "r_news": "News",
+   "r_sig": "CHART-SIGNAL",
+   "r_hold": "Halten wird empfohlen, bis ein klarer Ausbruch aus der aktuellen Seitwärtsphase erfolgt. So bleibt das Risiko gering, während Support und Resistance genau beobachtet werden.",
+   "r_read": "Aus der Kursbewegung in deinem Chart gelesen",
+   "r_trend": "Trend",
+   "r_down": "Abwärts",
+   "r_vol": "Volatilität",
+   "r_high": "Hoch",
+   "r_volu": "Volumen",
+   "r_high2": "Hoch",
+   "r_sent": "Stimmung",
+   "r_neutral": "Neutral",
+   "r_res": "Widerstand",
+   "r_sup": "Unterstützung",
+   "r_lock": "Key Levels, das gefundene Chartmuster und die Risikoeinschätzung",
+   "r_unlock": "Komplette Analyse freischalten",
+   "r_disc": "KI-generierte Analyse – keine Handlungs- oder Anlageempfehlung! Nutzung nur zu Bildungszwecken. Haftung ist ausgeschlossen!",
+   "pw_f1": "Die komplette Analyse jedes Charts: Key Levels, Muster, Risiko",
+   "pw_f2": "Dein Daily Briefing für",
+   "pw_f3": "Alle 8 Akademie-Units, mit Quiz und Audio",
+   "pw_f4": "130 Märkte, 7 Sprachen",
+   "pw_pr1": "Über 150.000 Trader",
+   "pw_pr2": "nutzen ChartDetector AI",
+   "pw_save": "SPARE {save}",
+   "pw_yr": "Jährlich",
+   "pw_yr_s": "{yr} pro Jahr",
+   "pw_yrw": "{yrw}",
+   "pw_wk_u": "pro Woche",
+   "pw_wkn": "Wöchentlich",
+   "pw_wk_s": "Wöchentliche Abrechnung",
+   "pw_wk": "{wk}",
+   "pw_wk_u2": "pro Woche",
+   "pw_cancel": "Jederzeit kündbar",
+   "pw_restore": "Wiederherstellen",
+   "pw_terms": "AGB",
+   "pw_priv": "Datenschutz",
+   "o_h": "Noch nicht bereit für ein ganzes Jahr?",
+   "o_s": "Nimm sechs Monate. Derselbe volle Zugang, die halbe Bindung.",
+   "o_k": "6 MONATE",
+   "o_p": "{h6}",
+   "o_pw": "{h6w} pro Woche · {save6} günstiger als wöchentlich",
+   "o_lab": "Zeit für alle 8 Akademie-Units",
+   "u1": "Markt&shy;grundlagen",
+   "u2": "Charts lesen",
+   "u3": "Trends &amp; Levels",
+   "u4": "Chart&shy;muster",
+   "u5": "Kerzen",
+   "u6": "Risiko",
+   "u7": "Indikatoren",
+   "u8": "Psycho&shy;logie",
+   "o_cta": "6 Monate für {h6}",
+   "o_no": "Nein, danke",
+   "r_res2": "Widerstand",
+   "r_sup2": "Unterstützung",
+   "pw_pat": "Falling Wedge erkannt",
+   "pw_gold": "Gold · XAUUSD",
+   "r_sig0": "CHART-SIGNAL"
+  }
+ },
+ "prices": {
+  "de": {
+   "yr": "49,99 €",
+   "yrw": "0,96 €",
+   "wk": "9,99 €",
+   "h6": "29,99 €",
+   "h6w": "1,15 €",
+   "save": "90 %",
+   "save6": "88 %"
+  }
+ },
+ "labelsI18n": {
+  "de": {
+   "mk": {
+    "stocks": "Aktien",
+    "crypto": "Krypto",
+    "forex": "Forex",
+    "comm": "Rohstoffe"
+   },
+   "lvl": {
+    "new": "Einsteiger",
+    "some": "Gelegentlich",
+    "pro": "Aktiver Trader"
+   }
+  }
+ },
+ "liveUrl": "https://eddieatadapty.github.io/chartdetector-flow-rebuild/",
+ "video": "assets/walkthrough.mp4",
+ "poster": "assets/walkthrough-poster.jpg",
+ "compare": null,
+ "tour": {
+  "introLede": "Five ideas to turn more traders into subscribers. <span>Built into your own app, screen by screen.</span>",
+  "endTitle": "Five ideas, built into ChartDetector’s own screens.",
+  "segments": [
+   {
+    "id": "welcome",
+    "d": 3200,
+    "tap": [
+     ".c-cta",
+     2600
+    ]
+   },
+   {
+    "id": "markets",
+    "d": 1600,
+    "st": {
+     "mk": []
+    },
+    "tap": [
+     "[data-toggle=\"mk:crypto\"]",
+     900
+    ]
+   },
+   {
+    "id": "markets",
+    "d": 1300,
+    "st": {
+     "mk": [
+      "crypto"
+     ]
+    },
+    "tap": [
+     ".c-cta",
+     850
+    ]
+   },
+   {
+    "id": "level",
+    "d": 1700,
+    "tap": [
+     "[data-pick=\"lvl:new\"]",
+     1050
+    ]
+   },
+   {
+    "id": "goal",
+    "d": 1700,
+    "st": {
+     "lvl": "new"
+    },
+    "tap": [
+     "[data-pick=\"goal:learn\"]",
+     1050
+    ]
+   },
+   {
+    "id": "setup",
+    "d": 3300,
+    "st": {
+     "goal": "learn"
+    },
+    "tap": [
+     ".c-cta",
+     2800
+    ]
+   },
+   {
+    "id": "pick",
+    "d": 2000,
+    "tap": [
+     ".c-cta",
+     1500
+    ]
+   },
+   {
+    "id": "scan",
+    "d": 3000,
+    "reveal": ".c-proof"
+   },
+   {
+    "id": "result",
+    "d": 3400,
+    "tap": [
+     ".c-unlock",
+     2900
+    ]
+   },
+   {
+    "id": "paywall",
+    "d": 3200,
+    "tap": [
+     ".s-x",
+     2700
+    ]
+   },
+   {
+    "id": "offer",
+    "d": 2600
+   },
+   {
+    "id": "offer",
+    "d": 2500,
+    "end": true
+   }
+  ],
+  "captions": {
+   "welcome": {
+    "k": "Context",
+    "t": "One photo, a verdict in seconds",
+    "l": "Your site’s promise, on your own Gold chart."
+   },
+   "markets": {
+    "k": "Context",
+    "t": "Three quick questions",
+    "l": "Markets, experience, and what they want first."
+   },
+   "level": {
+    "k": "Context",
+    "t": "Three quick questions",
+    "l": "Experience decides the path that follows."
+   },
+   "goal": {
+    "k": "Context",
+    "t": "Three quick questions",
+    "l": "Their goal becomes the paywall headline."
+   },
+   "setup": {
+    "n": 1,
+    "t": "Use the answers you collect",
+    "l": "Beginners get the Academy, traders the second opinion.",
+    "o": "+10–20%",
+    "ol": "CR to purchase"
+   },
+   "pick": {
+    "k": "Context",
+    "t": "A real chart, one tap away",
+    "l": "Today’s Gold chart and your ‘Analyze Chart’ button."
+   },
+   "scan": {
+    "n": 3,
+    "t": "Earn trust while the AI works",
+    "l": "150,000+ traders and a review matched to their level.",
+    "o": "+3–8%",
+    "ol": "CR to purchase"
+   },
+   "result": {
+    "n": 2,
+    "t": "Read a chart before asking for money",
+    "l": "Verdict free; levels, pattern and risk unlock.",
+    "o": "+10–25%",
+    "ol": "CR to purchase"
+   },
+   "paywall": {
+    "n": 4,
+    "t": "Make yearly the obvious choice",
+    "l": "Two plans: $0.96 a week next to $9.99.",
+    "o": "+10–20%",
+    "ol": "ARPU"
+   },
+   "offer": {
+    "n": 5,
+    "t": "Catch the people who close",
+    "l": "Six months for $34.99, a real plan, no countdown.",
+    "o": "+5–10%",
+    "ol": "CR to purchase"
+   }
+  }
+ },
+ "grounding": "Impact ranges are Adapty’s expected effect from teardowns and A/B tests across 30,000+ subscription apps, not measured lift for ChartDetector AI. They overlap, so they don’t add up.",
+ "sources": [
+  {
+   "group": "Prices",
+   "items": [
+    {
+     "dt": "$49.99 a year · $9.99 a week · $34.99 for 6 months",
+     "dd": "In-App Purchases on your <a href=\"https://apps.apple.com/us/app/chartdetector-ai/id6743856402\" target=\"_blank\" rel=\"noopener\">US App Store listing</a> (‘Jährlich’, ‘Weekly’, ‘6 Months’). $0.96 a week, $1.35 a week, 90% and 87% are computed from them."
+    },
+    {
+     "dt": "49,99 € · 9,99 € · 29,99 €",
+     "dd": "Your <a href=\"https://apps.apple.com/de/app/chartdetector-ai/id6743856402\" target=\"_blank\" rel=\"noopener\">German listing</a>, same SKU names. 0,96 € and 1,15 € a week, 90 % and 88 % computed from them."
+    },
+    {
+     "dt": "Not used",
+     "dd": "Also listed: $19.99, $24.99 and $17.99 monthly, $8.99 weekly, $49.99 and $59.99 for six months, $9.99 News Monthly; in Germany 29,99 € ‘Jährlich’, 39,99 € ‘Unlimited Jährlich’, 14,99 € ‘Unlimited Monatlich’. We can’t see which are live, so the prototype uses one consistent set."
+    }
+   ]
+  },
+  {
+   "group": "Proof",
+   "items": [
+    {
+     "dt": "150,000+ traders · 130 markets · 7 languages · 8 Academy units",
+     "dd": "<a href=\"https://chartdetectorai.com\" target=\"_blank\" rel=\"noopener\">chartdetectorai.com</a>."
+    },
+    {
+     "dt": "Reviews by TheresaKahri and BettiMei",
+     "dd": "App Store reviews as quoted on your site, with the avatars your site uses. German versions are our translation."
+    },
+    {
+     "dt": "Not used: the star rating",
+     "dd": "4.4 from 82 ratings (US) and 4.1 from 83 (Germany). Too few ratings to carry a paywall yet, so the trader count does that job."
+    }
+   ]
+  },
+  {
+   "group": "Features and copy",
+   "items": [
+    {
+     "dt": "Welcome",
+     "dd": "Your site’s hero: “Photograph any chart. Get the verdict in seconds.” and “Snap your screen or drop in a screenshot.”"
+    },
+    {
+     "dt": "Analysis",
+     "dd": "The Gold / XAUUSD analysis (Hold, insights, 4,250 / 4,100, Falling Wedge) and the disclaimer are word for word from the app screens on your site; the German disclaimer is from your German App Store screenshots."
+    },
+    {
+     "dt": "Academy",
+     "dd": "“From Beginner to Expert in 30 Days” (App Store screenshot 3) and the eight unit names from your site."
+    },
+    {
+     "dt": "The three questions",
+     "dd": "Ours, worded with the markets and use cases on your site."
+    }
+   ]
+  },
+  {
+   "group": "Design",
+   "items": [
+    {
+     "dt": "Colours",
+     "dd": "Sampled from your in-app screens: background #080c13, cards #202329, green #22c55e, Hold amber #f0a93e, red #ff6568."
+    },
+    {
+     "dt": "Type",
+     "dd": "SF Pro, the system font your screens use, with Inter (your site’s font) as the fallback."
+    },
+    {
+     "dt": "Art",
+     "dd": "Gold chart, gold icon and the candle mark cropped from your site’s app screens and App Store screenshot 1; market logos, reviewer avatars and Academy art from your site."
+    }
+   ]
+  },
+  {
+   "group": "What we couldn’t see",
+   "items": [
+    {
+     "dt": "Your live onboarding and paywall",
+     "dd": "We built from your listing and site, not a recording of the app, so there’s no today-versus-proposed paywall here. A screen recording would let us add it."
+    },
+    {
+     "dt": "Free trial",
+     "dd": "We couldn’t tell whether you offer one, so the prototype doesn’t promise one."
+    },
+    {
+     "dt": "Your test history",
+     "dd": "If you’ve already tested any of these, tell us and we’ll go deeper on the rest."
+    }
+   ]
+  }
+ ]
+}
+</script>
+
+<script>
+/* per-app hooks go here: window.onSync = function(S){…}; window.onEnter = function(id, S){…}; window.onLang = function(lang){…};
+   Globals available: S (S.lang = current language), C, cur, ORDER, scr, go(), back(), jump(), sync(), setLang(), fillP(str, lang),
+   SHOT (screenshot/tour run), HERO (hero-still run). Per-language dynamic text: read S.lang in onSync. */
+var CD_H = {
+  en: {setup: {learn: "Let’s teach you to read charts", check: "Your second opinion is ready", time: "Every chart, read in seconds"},
+       pw: {learn: "Go from beginner to expert in 30 days", check: "A second opinion for every trade", time: "The full read on every chart, in seconds"}},
+  de: {setup: {learn: "Wir bringen dir das Chartlesen bei", check: "Deine zweite Meinung ist bereit", time: "Jeder Chart, in Sekunden gelesen"},
+       pw: {learn: "Vom Anfänger zum Experten in 30 Tagen", check: "Eine zweite Meinung für jeden Trade", time: "Die komplette Analyse jedes Charts, in Sekunden"}}
+};
+window.onSync = function(S){
+  var L = CD_H[S.lang] || CD_H.en, g = S.goal || 'learn', t = S.lvl === 'new' ? 'learn' : 'trade';
+  document.getElementById('setupH').textContent = L.setup[g];
+  document.getElementById('pwH').textContent = L.pw[g];
+  document.querySelectorAll('.phone [data-track]').forEach(function(el){
+    var k = el.dataset.track; el.style.display = (k === t || k === (t === 'learn' ? 'learn2' : 'trade2')) ? '' : 'none';
+  });
+};
+var cdT = null;
+window.onEnter = function(id){
+  if (id !== 'scan') return;
+  var s3 = document.getElementById('scStep3'); s3.classList.add('wait'); clearTimeout(cdT);
+  if (!SHOT) cdT = setTimeout(function(){ s3.classList.remove('wait'); }, 1500);
+};
+</script>
+<script>
+/* ============ engine — generic, do not fork per app ============ */
+var C = JSON.parse(document.getElementById('content').textContent);
+var S = C.state, scr = {}, ORDER = [], hist = [], cur = null, Q = location.search;
+var SHOT = /[?&](shot|phone|tour)\b/.test(Q), HERO = /[?&]hero\b/.test(Q);
+/* a screen with data-aside (e.g. the paywall TODAY for the side-by-side) renders for stills but is not part of the flow */
+document.querySelectorAll('.scr').forEach(function(s){ scr[s.dataset.id] = s; if (!s.hasAttribute('data-aside')) ORDER.push(s.dataset.id); });
+if (/[?&]shot\b/.test(Q)) document.documentElement.classList.add('shot');
+if (/[?&]phone\b/.test(Q)) document.documentElement.classList.add('shot', 'phoneonly');
+if (/[?&]clear\b/.test(Q)) document.documentElement.classList.add('clear');
+var IDEAS = (C.ideas || []).length;
+
+/* ---- languages: markup is the first language; C.i18n[lang][data-t key] the others; {tokens} from C.prices[lang] ---- */
+var LANGS = C.langs || [], BASE = LANGS.length ? LANGS[0].code : 'en', LANG_DONE = BASE, BASE_LABELS = JSON.parse(JSON.stringify(C.labels || {}));
+if (!S.lang) S.lang = BASE;
+function fillP(s, l){ var P = (C.prices || {})[l] || {}; return String(s).replace(/\{(\w+)\}/g, function(m, k){ return k in P ? P[k] : m; }); }
+function applyLang(){
+  var l = S.lang || BASE; if (l === LANG_DONE) return;
+  var T = (C.i18n || {})[l] || {};
+  document.querySelectorAll('.phone [data-t]').forEach(function(el){
+    if (el._base == null) el._base = el.innerHTML;
+    el.innerHTML = l === BASE || T[el.dataset.t] == null ? el._base : fillP(T[el.dataset.t], l);
+  });
+  C.labels = JSON.parse(JSON.stringify(BASE_LABELS));
+  var LL = (C.labelsI18n || {})[l] || {}; Object.keys(LL).forEach(function(k){ C.labels[k] = LL[k]; });
+  LANG_DONE = l;
+}
+function setLang(l){
+  if (!LANGS.some(function(x){ return x.code === l; })) return;
+  S.lang = l; sync();
+  document.querySelectorAll('[data-setlang]').forEach(function(b){ b.classList.toggle('on', b.dataset.setlang === l); });
+  if (window.onLang) window.onLang(l);
+}
+
+function lab(key){ var v = S[key]; var L = C.labels[key]; if (Array.isArray(v)) return v.map(function(x){ return L && L[x] || x; }).join(', '); return (L && L[v]) || v; }
+function sync(){
+  applyLang();
+  document.querySelectorAll('[data-bind]').forEach(function(el){
+    var b = el.dataset.bind, m = b.split(':');
+    el.textContent = m[0] === 'label' ? lab(m[1]) : m[0] === 'count' ? (S[m[1]] || []).length : (S[b] == null ? '' : S[b]);
+  });
+  document.querySelectorAll('[data-pick]').forEach(function(el){ var p = el.dataset.pick.split(':'); el.classList.toggle('on', S[p[0]] === p[1]); });
+  document.querySelectorAll('[data-toggle]').forEach(function(el){ var p = el.dataset.toggle.split(':'); el.classList.toggle('on', (S[p[0]] || []).indexOf(p[1]) > -1); });
+  document.querySelectorAll('[data-requires]').forEach(function(el){ el.disabled = !(S[el.dataset.requires] || []).length; });
+  document.querySelectorAll('[data-show]').forEach(function(el){ var p = el.dataset.show.split(':'); el.style.display = String(S[p[0]]) === p[1] ? '' : 'none'; });
+  if (window.onSync) window.onSync(S);
+}
+function show(id, dir){
+  var from = scr[cur], to = scr[id]; if (!to || id === cur) return;
+  var sheet = to.classList.contains('sheet');
+  if (from){
+    from.classList.remove('is-active');
+    if (sheet) from.classList.add('under');                                   /* a sheet slides up over the screen that opened it */
+    else if (dir === 'fwd' && !from.classList.contains('sheet')) from.classList.add('is-past');
+  }
+  if (!sheet) Object.keys(scr).forEach(function(k){ var u = scr[k]; if (u !== to && u.classList.contains('under')) { u.classList.remove('under'); if (dir === 'fwd') u.classList.add('is-past'); } });
+  to.classList.remove('is-past', 'under'); to.classList.add('is-active'); cur = id;
+  paint(); if (window.onEnter) window.onEnter(id, S);
+}
+function go(id){ if (cur) hist.push(cur); show(id, 'fwd'); }
+function back(){ if (hist.length) { var p = hist.pop(); scr[cur].classList.remove('is-active'); show(p, 'back'); } }
+function jump(id){
+  Object.keys(scr).forEach(function(k){ scr[k].classList.add('nofx'); scr[k].classList.remove('is-active', 'is-past', 'under'); });
+  var i = ORDER.indexOf(id); hist = ORDER.slice(0, i < 0 ? 0 : i); cur = null;
+  ORDER.slice(0, i).forEach(function(k){ if (!scr[k].classList.contains('sheet')) scr[k].classList.add('is-past'); });
+  if (scr[id] && scr[id].classList.contains('sheet')) {                        /* jumping to a sheet: its opener stays visible under it */
+    for (var j = i - 1; j >= 0; j--) if (!scr[ORDER[j]].classList.contains('sheet')) { scr[ORDER[j]].classList.remove('is-past'); scr[ORDER[j]].classList.add('under'); break; }
+  }
+  show(id, 'jump');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ Object.keys(scr).forEach(function(k){ scr[k].classList.remove('nofx'); }); }); });
+}
+function stepBy(d){ var i = ORDER.indexOf(cur) + d; if (i >= 0 && i < ORDER.length) jump(ORDER[i]); }
+function jumpTo(id){
+  var p = document.getElementById('prototype');
+  if (p && !document.documentElement.classList.contains('appmode')) p.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+  jump(id);
+}
+function paint(){
+  sync();
+  var c = document.getElementById('chips');
+  if (!c.childElementCount) ORDER.forEach(function(id){
+    var p = C.panel[id] || {}, b = document.createElement('button');
+    b.className = 'au-chip'; b.type = 'button'; b.dataset.id = id; b.setAttribute('role', 'tab');
+    b.innerHTML = (p.idea ? '<i>' + p.idea + '</i>' : '') + ((C.chips && C.chips[id]) || id);
+    b.onclick = function(){ jump(id); };
+    c.appendChild(b);
+  });
+  c.querySelectorAll('.au-chip').forEach(function(b){ var on = b.dataset.id === cur; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  var d = C.panel[cur] || {t: cur, why: ''}, n = ORDER.indexOf(cur) + 1;
+  document.getElementById('panel').innerHTML =
+    (d.idea ? '<div class="au-pn-k"><i></i>Idea ' + d.idea + ' of ' + IDEAS + '</div>' : '<div class="au-pn-k au-ctx"><i></i>Context</div>') +
+    '<h3 class="au-pn-t">' + d.t + '</h3><p class="au-pn-h">' + d.why + '</p>' +
+    (d.iv ? '<div class="au-pn-o"><div class="au-lab">Potential outcome · based on Adapty data</div><div class="au-val"><mark>' + d.iv + '</mark></div><div class="au-sub">' + (d.il || '') + '</div></div>' : '') +
+    (d.also ? '<p class="au-pn-a">' + d.also + '</p>' : '') +
+    '<div class="au-pn-nav"><button type="button" onclick="stepBy(-1)"' + (n <= 1 ? ' disabled' : '') + '>‹ Previous</button><span>Screen ' + n + ' of ' + ORDER.length + '</span><button type="button" onclick="stepBy(1)"' + (n === ORDER.length ? ' disabled' : '') + '>Next ›</button></div>';
+  var ab = document.getElementById('abT'); if (ab) ab.textContent = (d.idea ? 'Idea ' + d.idea + ' of ' + IDEAS + ' · ' : '') + (d.t || '');
+}
+document.addEventListener('click', function(e){
+  var j = e.target.closest('[data-jumpto]'); if (j){ e.preventDefault(); jumpTo(j.dataset.jumpto); return; }
+  var L = e.target.closest('[data-setlang]'); if (L){ setLang(L.dataset.setlang); return; }
+  if (e.target.closest('[data-langtoggle]') && LANGS.length > 1){ var k = LANGS.findIndex(function(x){ return x.code === S.lang; }); setLang(LANGS[(k + 1) % LANGS.length].code); return; }
+  var el = e.target.closest('[data-go],[data-back],[data-pick],[data-toggle]'); if (!el) return;
+  if (el.dataset.pick){ var p = el.dataset.pick.split(':'); S[p[0]] = p[1]; sync(); if (el.dataset.advance) setTimeout(function(){ go(el.dataset.advance); }, 170); return; }
+  if (el.dataset.toggle){ var q = el.dataset.toggle.split(':'), a = S[q[0]] = S[q[0]] || [], i = a.indexOf(q[1]); if (i > -1) a.splice(i, 1); else a.push(q[1]); sync(); return; }
+  if ('back' in el.dataset) return back();
+  go(el.dataset.go);
+});
+document.querySelectorAll('[data-input]').forEach(function(inp){
+  inp.value = S[inp.dataset.input] || ''; inp.addEventListener('input', function(){ S[inp.dataset.input] = inp.value.trim() || 'there'; sync(); });
+});
+function $(id){ return document.getElementById(id); }
+
+/* hero stills, shortlist, outcome, sources — from CONTENT */
+$('heroPhones').innerHTML = (C.hero || []).map(function(id, i){
+  var pos = ['l', 'c', 'r'][i] || 'r', t = (C.chips && C.chips[id]) || id;
+  return '<button class="au-hp au-' + pos + '" data-jumpto="' + id + '" aria-label="Open ' + t + '"><img src="assets/hero/' + id + '.png" alt=""></button>';
+}).join('');
+$('ideaList').innerHTML = (C.ideas || []).map(function(r, i){
+  return '<article class="au-idea"><div class="au-num">0' + (i + 1) + '</div><div><h3>' + r.title + '</h3><p>' + r.what + '</p>' +
+    '<button type="button" class="au-lnk" data-jumpto="' + r.screen + '">See it on the screen</button></div>' +
+    '<div class="au-imp"><div class="au-v"><mark>' + r.impact + '</mark></div><div class="au-l">' + r.il + '</div></div></article>';
+}).join('');
+var O = C.outcome || {};
+$('bandNums').innerHTML =
+  (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') +
+  (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '');
+$('bandFn').textContent = C.grounding;
+$('fine').textContent = C.grounding + ' Prepared by Adapty.';
+$('srcBody').innerHTML = C.sources.map(function(g){
+  return '<div><h4>' + g.group + '</h4><dl>' + g.items.map(function(it){ return '<dt>' + it.dt + '</dt><dd>' + it.dd + '</dd>'; }).join('') + '</dl></div>';
+}).join('');
+function openSrc(){ var d = $('srcDetails'); d.open = true; d.scrollIntoView({block: 'start'}); }
+
+/* ---- extras: language control, the paywall side by side, QR / phone view, the video ---- */
+if (LANGS.length > 1) {
+  $('langRow').hidden = false;
+  var lb = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.name + '</button>'; }).join('');
+  $('langSw').innerHTML = lb;
+  $('abLang').innerHTML = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.code.toUpperCase() + '</button>'; }).join('');
+}
+var CM = C.compare;
+if (CM && scr[CM.today] && scr[CM.proposed]) {
+  $('compare').hidden = false; $('navCompare').hidden = false;
+  $('cmpBody').innerHTML = '<div class="au-ideas-h"><p class="au-kicker">' + (CM.kicker || 'The paywall, side by side') + '</p><h2 class="au-h2">' + (CM.title || 'Today and proposed.') + (CM.sub ? ' <span>' + CM.sub + '</span>' : '') + '</h2></div>' +
+    '<div class="au-cmp"><figure><img src="assets/hero/' + CM.today + '.png" alt="Your paywall today"><figcaption>Today <span>· ' + (CM.todayCap || 'rebuilt from your recording') + '</span></figcaption></figure>' +
+    '<ol class="au-chg">' + (CM.rows || []).map(function(r){
+      return '<li><h4>' + r.h + (r.idea ? ' <i>Idea ' + r.idea + '</i>' : '') + '</h4><span class="au-was"><em>Today</em>' + r.was + '</span><span class="au-now"><em>Proposed</em>' + r.now + '</span></li>';
+    }).join('') + '</ol>' +
+    '<figure><button type="button" class="au-cmp-go" data-jumpto="' + CM.proposed + '" aria-label="Open the proposed paywall"><img src="assets/hero/' + CM.proposed + '.png" alt="The proposed paywall"></button><figcaption>Proposed <span>· tap to try it</span></figcaption></figure></div>' +
+    (CM.kept ? '<p class="au-kept">' + CM.kept + '</p>' : '');
+}
+if (C.liveUrl) { $('qrCard').hidden = false; $('qrMob').hidden = false; }
+if (/[?&]app\b/.test(Q)) {
+  var H0 = document.documentElement; H0.classList.add('appmode');
+  var openP = function(o){ H0.classList.toggle('au-open', o); $('abWhy').querySelector('em').textContent = o ? 'Close ↓' : 'Why ↑'; };
+  $('abWhy').onclick = function(){ openP(!H0.classList.contains('au-open')); };
+  $('abScrim').onclick = function(){ openP(false); };
+}
+if (C.video) {
+  var dlg = $('vid'), vel = $('vidEl'); vel.src = C.video; if (C.poster) vel.poster = C.poster; $('vidDl').href = C.video;
+  $('heroVideo').hidden = false;
+  $('heroVideo').onclick = function(){ dlg.showModal(); vel.play().catch(function(){}); };
+  $('vidX').onclick = function(){ dlg.close(); };
+  dlg.addEventListener('close', function(){ vel.pause(); });
+  dlg.addEventListener('click', function(e){ if (e.target === dlg) dlg.close(); });
+}
+
+/* ---- ?tour: a deterministic walkthrough from C.tour — tourAt(ms) paints one frame; record-video.sh records it ---- */
+function tourInit(){
+  var T = C.tour, H = document.documentElement, TR = T.transition || 360;
+  H.classList.add('tourmode', 'shot'); document.body.classList.add('nofx');
+  var SEG = T.segments, START = [], STATE = [], UNDER = [], acc = 0, st = JSON.parse(JSON.stringify(C.state));
+  SEG.forEach(function(s, i){
+    START.push(acc); acc += s.d;
+    Object.keys(s.st || {}).forEach(function(k){ st[k] = s.st[k]; }); STATE.push(JSON.parse(JSON.stringify(st)));
+    var u = null; if (scr[s.id].classList.contains('sheet')) for (var j = i - 1; j >= 0; j--) if (!scr[SEG[j].id].classList.contains('sheet')) { u = SEG[j].id; break; }
+    UNDER.push(u);
+  });
+  var TOTAL = acc, capEl = $('tCap'), tap = $('tTap'), pressed = null, popped = [];
+  $('tIntro').innerHTML = '<p class="au-eyebrow"><i></i>' + document.querySelector('.au-top-hero .au-eyebrow').textContent + '</p><h1 class="au-display">' + C.app + '</h1>' +
+    '<p class="au-lede">' + (T.introLede || document.querySelector('.au-top-hero .au-lede').innerHTML) + '</p>';
+  $('tEnd').innerHTML = '<p class="au-eyebrow"><i></i>Growth Audit · ' + C.app + '</p><h2 class="au-te-h">' + (T.endTitle || 'Five ideas, built into your own onboarding.') + '</h2>' +
+    '<div class="au-te-n">' + (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') + (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '') + '</div>' +
+    (C.liveUrl ? '<div class="au-te-q"><img src="assets/qr-app.png" alt=""><div><b>Try it on your phone</b><span>' + C.liveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '') + '</span></div></div>' : '') +
+    '<p class="au-te-f">' + C.grounding + '</p>';
+  function ease(x){ return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function easeBack(x){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function capHTML(c){
+    c = c || {k: '', t: '', l: ''};
+    return '<div class="au-tk' + (c.n ? '' : ' au-ctx') + '"><i></i>' + (c.n ? 'Idea ' + c.n + ' of ' + IDEAS : (c.k || 'Context')) + '</div><h2 class="au-tt">' + c.t + '</h2><p class="au-tl">' + (c.l || '') + '</p>' +
+      (c.o ? '<div class="au-to"><small>Potential outcome · based on Adapty data</small><b><mark>' + c.o + '</mark></b><span>' + (c.ol || '') + '</span></div>' : '');
+  }
+  function place(id, tf, z){ scr[id].style.transform = tf; scr[id].style.zIndex = z; }
+  window.TOUR_MS = TOTAL;
+  window.tourAt = function(ms){
+    ms = Math.max(0, Math.min(TOTAL - 1, ms));
+    var i = 0; while (i < SEG.length - 1 && ms >= START[i + 1]) i++;
+    var s = SEG[i], local = ms - START[i], prev = i > 0 ? SEG[i - 1] : null;
+    Object.keys(STATE[i]).forEach(function(k){ S[k] = STATE[i][k]; }); sync();
+    var moving = prev && prev.id !== s.id && local < TR, p = moving ? ease(local / TR) : 1;
+    Object.keys(scr).forEach(function(k){ scr[k].classList.remove('is-active', 'is-past', 'under'); place(k, 'translateX(100%)', 0); });
+    var B = scr[s.id];
+    if (moving) {
+      if (B.classList.contains('sheet')) { place(prev.id, 'none', 1); B.style.transform = 'translateY(' + (1 - p) * 100 + '%)'; }
+      else {
+        var slide = 'translateX(' + (-28 * p) + '%)'; place(prev.id, slide, 1); B.style.transform = 'translateX(' + (1 - p) * 100 + '%)';
+        if (UNDER[i - 1]) place(UNDER[i - 1], slide, 0);
+      }
+    } else B.style.transform = 'none';
+    B.style.zIndex = 2;
+    if (UNDER[i] && !moving) place(UNDER[i], 'none', 1);
+    /* optional reveal: s.pop scales an element in, s.reveal fades one in a beat later */
+    popped.forEach(function(e){ e.style.transform = ''; e.style.opacity = ''; }); popped = [];
+    var q = Math.max(0, Math.min(1, (local - 250) / 550));
+    if (s.pop) { var pe = B.querySelector(s.pop); if (pe) { pe.style.transform = 'scale(' + (.55 + .45 * easeBack(q)) + ')'; pe.style.opacity = Math.min(1, q * 1.6); popped.push(pe); } }
+    if (s.reveal) { var re = B.querySelector(s.reveal); if (re) { re.style.opacity = Math.max(0, Math.min(1, (local - 520) / 300)); popped.push(re); } }
+    /* caption crossfades at screen changes; waits for the intro, gives way to the end card */
+    var key = s.id, op = 1;
+    if (moving) { if (p < .5) { key = prev.id; op = 1 - p * 2; } else op = p * 2 - 1; }
+    if (capEl.dataset.k !== key) { capEl.innerHTML = capHTML(T.captions[key]); capEl.dataset.k = key; }
+    var io = ms < 1100 ? 1 : Math.max(0, 1 - (ms - 1100) / 300), eo = s.end ? Math.min(1, local / 350) : 0;
+    capEl.style.opacity = op * Math.max(0, Math.min(1, (ms - 1400) / 300)) * (1 - eo);
+    /* the finger: fades in, taps, ripples out. Selectors are scoped to the screen */
+    tap.style.opacity = 0; if (pressed) { pressed.style.opacity = ''; pressed = null; }
+    if (s.tap) {
+      var el = B.querySelector(s.tap[0]), dt = local - s.tap[1];
+      if (el && dt > -260 && dt < 420) {
+        var r = el.getBoundingClientRect();
+        tap.style.left = (r.left + r.width / 2) + 'px'; tap.style.top = (r.top + r.height / 2) + 'px';
+        if (dt < 0) { tap.style.opacity = (dt + 260) / 260 * .9; tap.style.transform = 'scale(1)'; }
+        else { tap.style.opacity = .9 * (1 - dt / 420); tap.style.transform = 'scale(' + (1 + dt / 420 * .9) + ')'; }
+        if (dt >= 0 && dt < 160) { el.style.opacity = .72; pressed = el; }
+      }
+    }
+    $('tIntro').style.opacity = T.intro === false ? 0 : io;
+    $('tEnd').style.opacity = eo;
+    $('tProg').style.width = (ms / TOTAL * 100) + '%';
+    cur = s.id;
+    return i;
+  };
+  var tm = /[?&]t=(\d+)/.exec(Q); tourAt(tm ? +tm[1] : 0);
+}
+
+/* boot: #<screen-id> deep-links a screen (shoot.sh / hero-stills.sh use it); ?lang=xx picks the language */
+(function(){
+  var lm = /[?&]lang=(\w+)/.exec(Q); if (lm) setLang(lm[1]); else setLang(S.lang);
+  var h = location.hash.slice(1);
+  jump(scr[h] ? h : ORDER[0]);
+  if (scr[h] && !SHOT && !document.documentElement.classList.contains('appmode')) setTimeout(function(){ $('prototype').scrollIntoView(); }, 0);
+  if (/[?&]tour\b/.test(Q) && C.tour) tourInit();
+})();
+</script>
+</body>
+</html>
